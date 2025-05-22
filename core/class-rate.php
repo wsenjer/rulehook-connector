@@ -2,121 +2,78 @@
 
 namespace RuleHook\Core;
 
+class Rate
+{
+    private string $id = '';
 
-class Rate {
+    private float $cost = -1.0;
 
-	private $id = '';
+    private string $label = '';
 
-	private $cost = - 1.0;
+    private array $metaData = [];
 
-	private $label = '';
+    public function setMetaData(array $metaData): Rate
+    {
+        $this->metaData = $metaData;
 
-	private $matchedRules = [];
+        return $this;
+    }
 
-	/**
-	 * @param  $matchedRule
-	 *
-	 * @return Rate
-	 */
-	public function addMatchedRule(  $matchedRule ): Rate {
-		$this->matchedRules[] = $matchedRule;
+    public function getWoocommerceRate(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'label' => $this->getLabel(),
+            'cost' => $this->getCost(),
+            'meta_data' => $this->metaData,
+        ];
+    }
 
-		return $this;
-	}
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
-	public function getWoocommerceRate(): array {
-		$matchedRuleIds = array_map( function (  $rule ) {
-			return $rule->getId();
-		}, $this->matchedRules );
+    public function setId(string $id): Rate
+    {
+        $this->id = $id;
 
-		return [
-			'id'        => sprintf( 'simple_table_rates_%d', $this->getId() ),
-			'label'     => $this->getLabel(),
-			'cost'      => $this->getCost(),
-			'meta_data' => [
-				'matched_rules_ids' => $matchedRuleIds,
-				'instance_id' => $this->getId()
-			]
-		];
-	}
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getId(): string {
-		return $this->id;
-	}
+    public function getLabel(): string
+    {
+        return $this->label;
 
-	/**
-	 * @param string $id
-	 *
-	 * @return Rate
-	 */
-	public function setId( string $id ): Rate {
-		$this->id = $id;
+    }
 
-		return $this;
-	}
+    public function setLabel(string $label): Rate
+    {
+        $this->label = $label;
 
-	/**
-	 * @return string
-	 */
-	public function getLabel(): string {
-		$label = $this->label;
-		foreach ( $this->getMatchedRules() as $rule ) {
-			$label = apply_filters( "str_shipping_rate_label_" . $rule->getId(), $label );
-		}
+        return $this;
+    }
 
-		return $label;
-	}
+    /**
+     * @return []
+     */
+    public function getMetaData(): array
+    {
+        return $this->metaData;
+    }
 
-	/**
-	 * @param string $label
-	 *
-	 * @return Rate
-	 */
-	public function setLabel( string $label ): Rate {
-		$this->label = $label;
+    public function getCost(): float
+    {
+        return $this->cost;
+    }
 
-		return $this;
-	}
+    /**
+     * @return Rate
+     */
+    public function setCost(float $cost)
+    {
+        $this->cost = $cost;
 
-	/**
-	 * @return []
-	 */
-	public function getMatchedRules(): array {
-		return $this->matchedRules;
-	}
-
-	/**
-	 * @param [] $matchedRules
-	 *
-	 * @return Rate
-	 */
-	public function setMatchedRules( array $matchedRules ): Rate {
-		$this->matchedRules = $matchedRules;
-
-		return $this;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getCost(): float {
-		return $this->cost;
-	}
-
-	/**
-	 * @param float $cost
-	 *
-	 * @return Rate
-	 */
-	public function setCost( float $cost ) {
-		$this->cost = $cost;
-
-		return $this;
-	}
-
-
+        return $this;
+    }
 }
-

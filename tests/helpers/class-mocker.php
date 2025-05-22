@@ -1,6 +1,3 @@
 <?php
 
-
-class Mocker {
-
-}
+class Mocker {}

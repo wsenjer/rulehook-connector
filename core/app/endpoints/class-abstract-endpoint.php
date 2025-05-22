@@ -2,62 +2,59 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
+abstract class Abstract_Endpoint
+{
+    public function __construct()
+    {
+        add_action('wp_ajax_'.$this->action(), [$this, 'process']);
+    }
 
-abstract class Abstract_Endpoint {
+    public function process()
+    {
 
-	public function __construct()
-	{
-		add_action('wp_ajax_' . $this->action(), [$this, 'process']);
-	}
+        check_ajax_referer($this->action(), '_ajax_nonce');
 
-	public function process()
-	{
+        $data = json_decode(file_get_contents('php://input'), true);
 
-		check_ajax_referer( $this->action(), '_ajax_nonce' );
+        $response = $this->callback($data);
 
-		$data = json_decode(file_get_contents('php://input'), true);
+        echo json_encode($response);
+        exit;
+    }
 
-		$response = $this->callback($data);
+    /**
+     * @param  array|string  $errors
+     */
+    protected function abort($errors)
+    {
+        $errorsMessages = [$errors];
 
-		echo json_encode($response);
-		exit;
-	}
+        echo json_encode(['errors' => $errorsMessages]);
+        exit;
+    }
 
-	/**
-	 * @param array|string $errors
-	 */
-	protected function abort($errors)
-	{
-		$errorsMessages = [$errors];
+    /**
+     * @param  array  $response
+     */
+    protected function output($response)
+    {
+        echo json_encode($response);
+        exit;
+    }
 
-		echo json_encode(['errors' => $errorsMessages]);
-		exit;
-	}
+    protected function ok()
+    {
+        $this->output(['ok' => true]);
+    }
 
-	/**
-	 * @param array $response
-	 */
-	protected function output($response)
-	{
-		echo json_encode($response);
-		exit;
-	}
+    /**
+     * @param mixed
+     * @return array
+     */
+    abstract public function callback($data);
 
-	protected function ok()
-	{
-		$this->output(['ok' => true]);
-	}
-
-
-	/**
-	 * @param mixed
-	 * @return array
-	 */
-	public abstract function callback($data);
-
-	/**
-	 * @return string
-	 */
-	public abstract function action();
-
+    /**
+     * @return string
+     */
+    abstract public function action();
 }

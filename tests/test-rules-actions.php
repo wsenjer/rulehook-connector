@@ -1,8 +1,7 @@
 <?php
+
 /**
  * Class SampleTest
- *
- * @package Woocommerce_Restricted_Shipping_And_Payment_Pro
  */
 
 use WPRuby_Table_Rates\Core\Calculator;
@@ -11,142 +10,139 @@ use WPRuby_Table_Rates\Core\Rate;
 /**
  * Sample test case.
  */
-class WP_Rules_Actions_Test extends WP_UnitTestCase {
+class WP_Rules_Actions_Test extends WP_UnitTestCase
+{
+    public function test_rename_method_action()
+    {
+        $settings_args = [
+            'rules' => [
+                [
+                    'type' => 'weight',
+                    'value' => [
+                        'weight_from' => 0,
+                        'weight_to' => 1,
+                    ],
+                    'price' => 5,
+                    'actions' => [
+                        [
+                            'action' => 'rename_method',
+                            'value' => ['title' => 'Changed Title'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
-	public function test_rename_method_action()
-	{
-		$settings_args = [
-			'rules' => [
-				[
-					'type' => 'weight',
-					'value' => [
-						'weight_from' => 0,
-						'weight_to' => 1,
-					],
-					'price' => 5,
-					'actions' => [
-						[
-							'action' => 'rename_method',
-							'value' => ['title' => 'Changed Title']
-						]
-					]
-				]
-			]
-		];
+        $product = ['weight' => 0.5];
 
-		$product = [ 'weight' =>  0.5];
+        $rate = $this->calculate($settings_args, $product);
 
-		$rate = $this->calculate($settings_args, $product);
+        foreach ($rate->getMatchedRules() as $matchedRule) {
+            foreach ($matchedRule->getActions() as $action) {
+                $action->execute();
+            }
+        }
 
-		foreach ($rate->getMatchedRules() as $matchedRule) {
-			foreach ($matchedRule->getActions() as $action) {
-				$action->execute();
-			}
-		}
+        $this->assertEquals($rate->getCost(), 5);
+        $this->assertEquals($rate->getLabel(), 'Changed Title');
+    }
 
-		$this->assertEquals($rate->getCost(), 5);
-		$this->assertEquals($rate->getLabel(), 'Changed Title');
-	}
+    public function test_cancel_action()
+    {
+        $settings_args = [
+            'calculation_method' => 'sum',
+            'rules' => [
+                [
+                    'type' => 'weight',
+                    'value' => [
+                        'weight_from' => 0,
+                        'weight_to' => 1,
+                    ],
+                    'price' => 5,
+                    'actions' => [
+                        [
+                            'action' => 'cancel',
+                            'value' => [],
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
+        $product = ['weight' => 0.5];
 
-	public function test_cancel_action()
-	{
-		$settings_args = [
-			'calculation_method' => 'sum',
-			'rules' => [
-				[
-					'type' => 'weight',
-					'value' => [
-						'weight_from' => 0,
-						'weight_to' => 1,
-					],
-					'price' => 5,
-					'actions' => [
-						[
-							'action' => 'cancel',
-							'value' => []
-						]
-					]
-				]
-			]
-		];
+        $rate = $this->calculate($settings_args, $product);
 
-		$product = [ 'weight' =>  0.5];
+        foreach ($rate->getMatchedRules() as $matchedRule) {
+            foreach ($matchedRule->getActions() as $action) {
+                $action->execute();
+            }
+        }
 
-		$rate = $this->calculate($settings_args, $product);
+        $this->assertEquals($rate->getCost(), -1);
+    }
 
-		foreach ($rate->getMatchedRules() as $matchedRule) {
-			foreach ($matchedRule->getActions() as $action) {
-				$action->execute();
-			}
-		}
+    public function test_stop_action()
+    {
+        $settings_args = [
+            'calculation_method' => 'sum',
+            'rules' => [
+                [
+                    'type' => 'weight',
+                    'value' => [
+                        'weight_from' => 0,
+                        'weight_to' => 100,
+                    ],
+                    'price' => 5,
+                    'actions' => [
+                        [
+                            'action' => 'stop',
+                            'value' => [],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'weight',
+                    'value' => [
+                        'weight_from' => 0,
+                        'weight_to' => 100,
+                    ],
+                    'price' => 5,
+                    'actions' => [],
+                ],
+            ],
+        ];
 
-		$this->assertEquals($rate->getCost(), -1);
-	}
+        $product = ['weight' => 6];
 
-	public function test_stop_action()
-	{
-		$settings_args = [
-			'calculation_method' => 'sum',
-			'rules' => [
-				[
-					'type' => 'weight',
-					'value' => [
-						'weight_from' => 0,
-						'weight_to' => 100,
-					],
-					'price' => 5,
-					'actions' => [
-						[
-							'action' => 'stop',
-							'value' => []
-						]
-					]
-				],
-				[
-					'type' => 'weight',
-					'value' => [
-						'weight_from' => 0,
-						'weight_to' => 100,
-					],
-					'price' => 5,
-					'actions' => []
-				]
-			]
-		];
+        $rate = $this->calculate($settings_args, $product);
 
-		$product = [ 'weight' =>  6];
+        foreach ($rate->getMatchedRules() as $matchedRule) {
+            foreach ($matchedRule->getActions() as $action) {
+                $action->execute();
+            }
+        }
 
-		$rate = $this->calculate($settings_args, $product);
+        $this->assertEquals($rate->getCost(), 5);
+    }
 
-		foreach ($rate->getMatchedRules() as $matchedRule) {
-			foreach ($matchedRule->getActions() as $action) {
-				$action->execute();
-			}
-		}
+    private function get_package($product_args = [], $package_args = []): array
+    {
+        if (isset($product_args['id'])) {
+            $product = new WC_Product($product_args['id']);
+        } else {
+            $product = Tests_Helper::add_product($product_args);
+        }
 
-		$this->assertEquals($rate->getCost(), 5);
-	}
+        return Tests_Helper::prepare_package($product, $package_args);
+    }
 
+    private function calculate(array $settings_args, array $product, array $package_args = []): Rate
+    {
+        $settings = Tests_Helper::get_settings($settings_args);
 
-	private function get_package( $product_args = [], $package_args = [] ) :array
-	{
-		if (isset($product_args['id'])) {
-			$product = new WC_Product($product_args['id']);
-		} else {
-			$product = Tests_Helper::add_product( $product_args );
-		}
-		return Tests_Helper::prepare_package( $product, $package_args );
-	}
+        $calculator = new Calculator($settings);
 
-	private function calculate(array $settings_args, array $product, array $package_args = []): Rate
-	{
-		$settings = Tests_Helper::get_settings($settings_args);
-
-		$calculator = new Calculator($settings);
-
-		return $calculator->calculate($this->get_package($product, $package_args));
-	}
-
-
+        return $calculator->calculate($this->get_package($product, $package_args));
+    }
 }

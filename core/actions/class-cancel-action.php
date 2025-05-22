@@ -2,10 +2,7 @@
 
 namespace RuleHook\Core\Actions;
 
-class Cancel_Action extends Abstract_Action {
-
-	public function execute()
-	{
-	}
-
+class Cancel_Action extends Abstract_Action
+{
+    public function execute() {}
 }

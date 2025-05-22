@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The plugin bootstrap file
  *
@@ -22,34 +23,32 @@ namespace RuleHook;
 
 use RuleHook\Core\Core;
 
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (! defined('WPINC')) {
+    exit;
 }
 
+class RuleHook_Connector
+{
+    protected static $_instance = null;
 
-class RuleHook_Connector {
+    /**
+     * @return self
+     */
+    public static function get_instance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
 
-	protected static $_instance = null;
+        return self::$_instance;
+    }
 
-	/**
-	 * @return self
-	 */
-	public static function get_instance()
-	{
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-		return self::$_instance;
-	}
-
-	public function __construct()
-	{
-		Core::get_instance();
-	}
+    public function __construct()
+    {
+        Core::get_instance();
+    }
 }
 
-
-
-require_once dirname(__FILE__ ) . '/includes/autoloader.php';
+require_once dirname(__FILE__).'/includes/autoloader.php';
 
 RuleHook_Connector::get_instance();

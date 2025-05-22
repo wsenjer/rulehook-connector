@@ -1,9 +1,5 @@
-<h3><?php _e('RuleHook Connector Settings', 'simple-table-rates');?></h3>
-<?php if ($this->debug_mode == 'yes'): ?>
-	<div class="updated woocommerce-message">
-		<p><?php _e('RuleHook Connector debug mode is activated, only administrators can use it.', 'simple-table-rates');?></p>
-	</div>
-<?php endif;?>
+<h3><?php _e('RuleHook Connector Settings', 'rulehook-connector'); ?></h3>
+
 <div id="poststuff" class="str_settings">
 	<div id="post-body" class="metabox-holder columns-2">
 		<div id="post-body-content">
@@ -14,7 +10,7 @@
 		<div id="postbox-container-1" class="postbox-container wpruby-widgets">
 			<div id="side-sortables" class="meta-box-sortables ui-sortable">
 				<div class="postbox ">
-					<h3 class="hndle"><span class="dashicons dashicons-editor-help"></span>&nbsp;&nbsp;<?php _e('Plugin Support', 'simple-table-rates'); ?></h3>
+					<h3 class="hndle"><span class="dashicons dashicons-editor-help"></span>&nbsp;&nbsp;<?php _e('Plugin Support', 'rulehook-connector'); ?></h3>
 					<hr>
 					<div class="inside">
 						<div class="support-widget">
@@ -24,16 +20,16 @@
 								</a>
 							</p>
 							<p>
-								<?php _e('Top Notch WordPress Plugins!', 'simple-table-rates'); ?>
+								<?php _e('Top Notch WordPress Plugins!', 'rulehook-connector'); ?>
 							</p>
 							<ul>
-								<li>» <a href="<?php echo admin_url('admin.php?page=woocommerce-rulehook-connector-activation'); ?>" target="_blank"><?php _e('Add/Update Your license', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/submit-ticket/" target="_blank"><?php _e('Support Request', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/knowledgebase/how-to-renew-your-license/" target="_blank"><?php _e('How to renew your license', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/knowledgebase/how-to-upgrade-you-license/" target="_blank"><?php _e('How to upgrade my license', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/knowledgebase/change-plugins-license-domain/" target="_blank"><?php _e('How to change your license’s domain', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/knowledgebase_category/woocommerce-rulehook-connector/" target="_blank"><?php _e('Documentation', 'simple-table-rates'); ?></a></li>
-								<li>» <a href="https://wpruby.com/plugins/" target="_blank"><?php _e('Our Plugins Shop', 'simple-table-rates'); ?></a></li>
+								<li>» <a href="<?php echo admin_url('admin.php?page=woocommerce-rulehook-connector-activation'); ?>" target="_blank"><?php _e('Add/Update Your license', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/submit-ticket/" target="_blank"><?php _e('Support Request', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/knowledgebase/how-to-renew-your-license/" target="_blank"><?php _e('How to renew your license', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/knowledgebase/how-to-upgrade-you-license/" target="_blank"><?php _e('How to upgrade my license', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/knowledgebase/change-plugins-license-domain/" target="_blank"><?php _e('How to change your license’s domain', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/knowledgebase_category/woocommerce-rulehook-connector/" target="_blank"><?php _e('Documentation', 'rulehook-connector'); ?></a></li>
+								<li>» <a href="https://wpruby.com/plugins/" target="_blank"><?php _e('Our Plugins Shop', 'rulehook-connector'); ?></a></li>
 							</ul>
 						</div>
 					</div>
