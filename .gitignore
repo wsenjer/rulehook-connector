@@ -1,0 +1,5 @@
+.idea
+woocommerce-rulehook-connector.zip
+vendor
+.phpunit.result.cache
+.phpcs.xml.dist
