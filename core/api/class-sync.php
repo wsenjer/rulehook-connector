@@ -30,10 +30,14 @@ class Sync
      *
      * @throws Exception When the API request fails
      */
-    public function syncStoreMetadata(array $storeData): bool
+    public function syncStoreMetadata(array $storeData): array
     {
         $response = $this->client->request('POST', 'v1/store-sync', $storeData);
 
-        return isset($response['success']) && $response['success'] === true;
+        if (isset($response['success']) && $response['success'] === true) {
+            return $response;
+        }
+
+        return [];
     }
 }

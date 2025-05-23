@@ -56,7 +56,8 @@ class Shipping_Method extends \WC_Shipping_Method
         }
     }
 
-    public function admin_options() {
-        require_once( dirname( __FILE__ ) . '/app/frontend/views/app.php' );
+    public function admin_options()
+    {
+        require_once dirname(__FILE__).'/app/frontend/views/app.php';
     }
 }

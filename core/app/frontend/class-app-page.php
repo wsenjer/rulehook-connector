@@ -35,20 +35,20 @@ class App_Page
         if (! isset($_GET['tab']) || $_GET['tab'] !== 'shipping') {
             return;
         }
-        if (!(isset($_GET['section']) && $_GET['section'] === 'rulehook')) {
+        if (! (isset($_GET['section']) && $_GET['section'] === 'rulehook')) {
             return;
         }
 
-        wp_enqueue_script('wpruby-str-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION, true);
+        wp_enqueue_script('rulehook-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION, true);
 
-        wp_localize_script('wpruby-str-app', 'str_app',
+        wp_localize_script('rulehook-app', 'rulehook',
             [
                 'nonces' => Endpoints_Factory::get_endpoints_nonce(),
                 'store_currency_symbol' => get_woocommerce_currency_symbol(),
             ]
         );
 
-        wp_enqueue_style('wpruby-str-css', plugin_dir_url(__FILE__).'app/dist/style.css', [], Constants::UTIL_CURRENT_VERSION);
+        wp_enqueue_style('rulehook-css', plugin_dir_url(__FILE__).'app/dist/style.css', [], Constants::UTIL_CURRENT_VERSION);
 
     }
 }

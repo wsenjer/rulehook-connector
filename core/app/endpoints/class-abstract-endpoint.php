@@ -25,11 +25,9 @@ abstract class Abstract_Endpoint
     /**
      * @param  array|string  $errors
      */
-    protected function abort($errors)
+    protected function abort($error)
     {
-        $errorsMessages = [$errors];
-
-        echo json_encode(['errors' => $errorsMessages]);
+        echo json_encode(['error' => $error]);
         exit;
     }
 

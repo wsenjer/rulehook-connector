@@ -2,42 +2,33 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
-use RuleHook\Core\App\Endpoints\Services\Categories;
-use RuleHook\Core\App\Endpoints\Services\Users;
+use RuleHook\Core\Constants;
 
 class Load_App_Data_Endpoint extends Abstract_Endpoint
 {
     public function callback($data)
     {
-        $payload = [];
+        $lastSyncedTime = get_option(Constants::LAST_SYNC_TIME_KEY) ?? 'Never';
+        if ($lastSyncedTime !== 'Never') {
+            $lastSyncedTime = human_time_diff(strtotime($lastSyncedTime));
+        }
+        $productsSynced = get_option(Constants::PRODUCTS_SYNCED_KEY);
+        $shippingZonesSynced = get_option(Constants::SHIPPING_ZONES_SYNCED_KEY);
 
-        $categories_service = new Categories;
+        return [
+            'teamId' => get_option(Constants::TEAM_ID_KEY),
+            'isConnected' => ! empty(get_option(Constants::API_KEY_KEY)),
+            'storeId' => parse_url(home_url(), PHP_URL_HOST),
+            'lastSyncTime' => $lastSyncedTime.' ago',
+            'currency' => get_woocommerce_currency(),
+            'productsSynced' => $productsSynced !== false ? $productsSynced : 0,
+            'shippingZonesSynced' => $shippingZonesSynced !== false ? $shippingZonesSynced : 0,
+        ];
 
-        $payload['product_categories'] = $categories_service->get_product_categories();
-        $payload['product_tags'] = $categories_service->get_product_tags();
-        $payload['product_attributes'] = $categories_service->get_product_attributes();
-        $payload['product_attributes_terms'] = $categories_service->get_product_attributes_terms($payload['product_attributes']);
-        $payload['product_stock_status'] = $categories_service->get_product_stock_status();
-        $payload['shipping_classes'] = $categories_service->get_shipping_classes();
-        $payload['coupons'] = $categories_service->get_coupons();
-        $payload['user_roles'] = (new Users)->get_roles();
-        $payload['payment_methods'] = $this->get_payment_methods();
-
-        return $payload;
-    }
-
-    private function get_payment_methods(): array
-    {
-        $gateways = WC()->payment_gateways->payment_gateways();
-        unset($gateways['pre_install_woocommerce_payments_promotion']);
-
-        return array_map(function ($gateway) {
-            return ['id' => $gateway->id, 'title' => strip_tags($gateway->title)];
-        }, $gateways);
     }
 
     public function action()
     {
-        return 'str_load_app_data';
+        return 'rulehook_load_app_data';
     }
 }

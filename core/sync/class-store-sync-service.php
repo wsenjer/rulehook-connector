@@ -26,17 +26,20 @@ class Store_Sync_Service
 
     public function sync(): bool
     {
-        $api_key = 'key_nman3zxzmjjnxpy4wpdceeharffbcagnvf9so54c4z';
+        $api_key = get_option(Constants::API_KEY_KEY);
         $client = new Client(Constants::API_URL, $api_key);
 
         try {
             $sync = new Sync($client);
-
-            // Get basic payload without products (less memory intensive)
             $payload = $this->getPayload();
+            $result = $sync->syncStoreMetadata($payload);
+            if (! empty($result)) {
+                $this->updateSyncData($result);
 
-            // Sync the current batch
-            return $sync->syncStoreMetadata($payload);
+                return true;
+            }
+
+            return false;
 
         } catch (Exception $e) {
             error_log('RuleHook API Error: '.$e->getMessage());
@@ -49,7 +52,8 @@ class Store_Sync_Service
     {
         $storeBaseLocation = wc_get_base_location();
         $payload = [];
-        $payload['store_id'] = get_site_url();
+        $payload['team_id'] = get_option(Constants::TEAM_ID_KEY);
+        $payload['store_id'] = parse_url(home_url(), PHP_URL_HOST);
         $payload['base_location'] = $storeBaseLocation;
         $payload['currency'] = get_woocommerce_currency();
         $payload['products'] = $this->getNormalizedProducts();
@@ -213,5 +217,19 @@ class Store_Sync_Service
         }
 
         return 0.0;
+    }
+
+    private function updateSyncData(array $result): void
+    {
+
+        $current_time = current_time('mysql');
+        update_option(Constants::LAST_SYNC_TIME_KEY, $current_time);
+
+        $productsSynced = $result['products_synced'] ?? 0;
+        update_option(Constants::PRODUCTS_SYNCED_KEY, $productsSynced);
+
+        $zonesSynced = $result['zones_synced'] ?? 0;
+        update_option(Constants::SHIPPING_ZONES_SYNCED_KEY, $zonesSynced);
+
     }
 }

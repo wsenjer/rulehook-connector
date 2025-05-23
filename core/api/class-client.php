@@ -102,4 +102,16 @@ class Client
 
         return $decodedResponse;
     }
+
+    public function validateApiKey(string $storeId): array
+    {
+        $response = $this->request('POST', '/v1/validate-api-key',
+            [
+                'apiKey' => $this->accessToken,
+                'storeId' => $storeId,
+            ]);
+
+        return $response;
+
+    }
 }
