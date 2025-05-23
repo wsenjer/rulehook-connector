@@ -49,11 +49,10 @@ class Store_Sync_Service
     {
         $storeBaseLocation = wc_get_base_location();
         $payload = [];
-        $payload['store_id'] = 'str_92bfdd43';
+        $payload['store_id'] = get_site_url();
         $payload['base_location'] = $storeBaseLocation;
         $payload['currency'] = get_woocommerce_currency();
         $payload['products'] = $this->getNormalizedProducts();
-
         $payload['shipping_zones'] = $this->getNormalizedShippingZones();
 
         return $payload;

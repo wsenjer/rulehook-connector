@@ -35,11 +35,11 @@ class App_Page
         if (! isset($_GET['tab']) || $_GET['tab'] !== 'shipping') {
             return;
         }
-        if (! isset($_GET['instance_id'])) {
+        if (!(isset($_GET['section']) && $_GET['section'] === 'rulehook')) {
             return;
         }
 
-        wp_enqueue_script('wpruby-str-app', plugin_dir_url(__FILE__).'app/dist/app.js', [], Constants::UTIL_CURRENT_VERSION, true);
+        wp_enqueue_script('wpruby-str-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION, true);
 
         wp_localize_script('wpruby-str-app', 'str_app',
             [
@@ -48,7 +48,7 @@ class App_Page
             ]
         );
 
-        wp_enqueue_style('wpruby-str-css', plugin_dir_url(__FILE__).'app/dist/css/app.css', [], Constants::UTIL_CURRENT_VERSION);
+        wp_enqueue_style('wpruby-str-css', plugin_dir_url(__FILE__).'app/dist/style.css', [], Constants::UTIL_CURRENT_VERSION);
 
     }
 }
