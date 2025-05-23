@@ -6,42 +6,13 @@ import 'vue-sonner/style.css'
 import api from '@/composable/api.js'
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue'
 
-const props = defineProps({
-  connectionInfo: {
-    type: Object,
-    default: () => ({ teamId: '54', storeId: 'mystore.com' }),
-  },
-  lastSync: {
-    type: String,
-    default: '',
-  },
-  productsSynced: {
-    type: Number,
-    default: 0,
-  },
-  shippingZones: {
-    type: Number,
-    default: 0,
-  },
-  currency: {
-    type: String,
-    default: 'USD',
-  },
-  products: {
-    type: Array,
-    default: () => [],
-  },
-  apiResponse: {
-    type: Object,
-    default: () => ({}),
-  },
-  devMode: {
-    type: Boolean,
-    default: false,
-  },
-})
+const shippingMethodEnabled = ref(false)
+const methodTitle = ref('Shipping')
 
-const connectionInfo = ref(props.connectionInfo)
+const connectionInfo = ref({
+  storeId: '',
+  teamId: '',
+})
 
 const isConnected = ref(false)
 const apiKey = ref('')
@@ -50,6 +21,7 @@ const apiEndpoint = ref('/api/v1/validate-api-key')
 
 const lastSyncTime = ref('')
 const currency = ref('USD')
+const devMode = ref(false)
 const formattedLastSync = computed(() => {
   if (!lastSyncTime.value) return 'Never'
   return lastSyncTime.value
@@ -88,23 +60,7 @@ onMounted(() => {
   window.addEventListener('beforeunload', function (event) {
     event.stopImmediatePropagation()
   })
-  api
-    .post('', { action: 'rulehook_load_app_data' })
-    .then((response) => {
-      if (response.data.teamId) {
-        isConnected.value = response.data.isConnected
-        connectionInfo.value.storeId = response.data.storeId
-        connectionInfo.value.teamId = response.data.teamId
-        lastSyncTime.value = response.data.lastSyncTime
-        currency.value = response.data.currency
-        productsSynced.value = response.data.productsSynced
-        shippingZonesSynced.value = response.data.shippingZonesSynced
-      }
-      isLoading.value = false
-    })
-    .catch((error) => {
-      toast.error('Error fetching connection info. Please try again later.')
-    })
+  loadApp()
 })
 const isDisconnecting = ref(false)
 const disconnect = () => {
@@ -147,6 +103,68 @@ const sync = () => {
     })
     .finally(() => {
       isSyncing.value = false
+    })
+}
+
+const toggleDevMode = () => {
+  api
+    .post('', { action: 'rulehook_toggle_dev_mode' })
+    .then((response) => {
+      if (response.data.ok) {
+        toast.success('Dev mode toggled successfully.')
+        loadApp()
+      }
+    })
+    .catch((error) => {
+      toast.error('Error toggling dev mode. Please try again later.')
+    })
+}
+
+const loadApp = () => {
+  api
+    .post('', { action: 'rulehook_load_app_data' })
+    .then((response) => {
+      if (response.data.teamId) {
+        isConnected.value = response.data.isConnected
+        connectionInfo.value.storeId = response.data.storeId
+        connectionInfo.value.teamId = response.data.teamId
+        lastSyncTime.value = response.data.lastSyncTime
+        currency.value = response.data.currency
+        productsSynced.value = response.data.productsSynced
+        shippingZonesSynced.value = response.data.shippingZonesSynced
+      }
+      devMode.value = response.data.devMode
+      shippingMethodEnabled.value = response.data.shippingMethodEnabled
+      methodTitle.value = response.data.methodTitle
+      isLoading.value = false
+    })
+    .catch((error) => {
+      toast.error('Error fetching connection info. Please try again later.')
+    })
+}
+
+// Add a function to save shipping method settings
+const isSavingSettings = ref(false)
+const saveShippingMethodSettings = () => {
+  isSavingSettings.value = true
+  api
+    .post('', {
+      action: 'rulehook_save_shipping_settings',
+      shippingMethodEnabled: shippingMethodEnabled.value,
+      methodTitle: methodTitle.value,
+    })
+    .then((response) => {
+      if (response.data.ok) {
+        toast.success('Shipping settings saved successfully.')
+      } else {
+        toast.error('Error saving shipping settings.')
+      }
+    })
+    .catch((error) => {
+      toast.error('Error saving shipping settings. Please try again later.')
+    })
+    .finally(() => {
+      isSavingSettings.value = false
     })
 }
 </script>
@@ -252,12 +270,11 @@ const sync = () => {
 
               Sync Now
             </button>
-
             <label class="inline-flex items-center">
               <input
                 type="checkbox"
-                :checked="devMode"
-                @change="alert('toggleDevMode')"
+                v-model="devMode"
+                @change="toggleDevMode"
                 class="form-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded"
               />
               <span class="ml-2 text-sm text-gray-700">Enable Dev Mode</span>
@@ -307,6 +324,56 @@ const sync = () => {
                 <p class="status-card-value">{{ currency }}</p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add this new section after the Store Sync Status card -->
+    <div class="rulehook-card mb-6">
+      <div class="rulehook-card__header border-b border-gray-200">
+        <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">Shipping Method Settings</p>
+      </div>
+      <div class="rulehook-card__body p-4">
+        <PlaceholderPattern v-if="isLoading" class="w-full h-24" />
+        <div v-else>
+          <div class="mb-4">
+            <label class="inline-flex items-center mb-4">
+              <input
+                type="checkbox"
+                v-model="shippingMethodEnabled"
+                class="form-checkbox h-5 w-5 text-indigo-600 border-gray-300 rounded"
+              />
+              <span class="ml-2 text-gray-700">Enable RuleHook shipping method</span>
+            </label>
+
+            <div class="mt-4">
+              <label for="method-title" class="block text-sm font-medium text-gray-700 mb-1">
+                Method Title
+              </label>
+              <div class="flex-grow sm:w-full md:w-full lg:w-2/5">
+                <input
+                  id="method-title"
+                  type="text"
+                  v-model="methodTitle"
+                  placeholder="Shipping"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              <p class="text-xs text-gray-500 mt-1">
+                This controls the title seen by customers during checkout.
+              </p>
+            </div>
+            <button
+              type="button"
+              @click="saveShippingMethodSettings"
+              class="rulehook-button is-primary text-sm px-4 py-2 mt-4"
+              :disabled="isSavingSettings"
+            >
+              <span v-if="isSavingSettings" class="dashicons dashicons-update animate-spin"></span>
+              Save Settings
+            </button>
           </div>
         </div>
       </div>

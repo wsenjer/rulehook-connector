@@ -49,6 +49,8 @@ class Endpoints_Factory
             Validate_Api_Key_Endpoint::class,
             Disconnect_Endpoint::class,
             Sync_Endpoint::class,
+            Toggle_Dev_Mode_Endpoint::class,
+            Save_Shipping_Settings_Endpoint::class,
         ];
     }
 }

@@ -17,4 +17,6 @@ class Constants
     const PRODUCTS_SYNCED_KEY = 'rulehook_products_synced';
 
     const SHIPPING_ZONES_SYNCED_KEY = 'rulehook_zones_synced';
+
+    const DEV_MODE_KEY = 'rulehook_dev_mode';
 }
