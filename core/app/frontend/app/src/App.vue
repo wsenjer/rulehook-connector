@@ -4,6 +4,7 @@ import { Toaster, toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
 import api from '@/composable/api.js'
+import PlaceholderPattern from '@/components/PlaceholderPattern.vue'
 
 const props = defineProps({
   connectionInfo: {
@@ -82,6 +83,7 @@ const connectStore = () => {
 }
 const productsSynced = ref(0)
 const shippingZonesSynced = ref(0)
+const isLoading = ref(true)
 onMounted(() => {
   window.addEventListener('beforeunload', function (event) {
     event.stopImmediatePropagation()
@@ -98,6 +100,7 @@ onMounted(() => {
         productsSynced.value = response.data.productsSynced
         shippingZonesSynced.value = response.data.shippingZonesSynced
       }
+      isLoading.value = false
     })
     .catch((error) => {
       toast.error('Error fetching connection info. Please try again later.')
@@ -157,69 +160,75 @@ const sync = () => {
         <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">RuleHook.com Integration</p>
       </div>
       <div class="rulehook-card__body p-4">
-        <div
-          v-if="isConnected"
-          class="flex flex-col sm:flex-row sm:justify-between sm:items-center"
-        >
-          <div class="text-gray-700">
-            <p v-if="connectionInfo.teamId" class="mb-1">
-              <span class="font-medium">Team ID:</span> {{ connectionInfo.teamId }}
-            </p>
-            <p v-if="connectionInfo.storeId" class="mb-1">
-              <span class="font-medium">Store ID:</span> {{ connectionInfo.storeId }}
-            </p>
-          </div>
-
-          <div class="mt-4 sm:mt-0 flex gap-3">
-            <a
-              :href="`${baseUrl}/dashboard`"
-              target="_blank"
-              class="rulehook-button is-primary text-sm px-4 py-2"
-            >
-              Open Dashboard
-            </a>
-            <button
-              type="button"
-              @click="disconnect()"
-              class="rulehook-button is-secondary text-sm px-4 py-2"
-            >
-              <span v-if="isDisconnecting" class="dashicons dashicons-update animate-spin"></span>
-              Disconnect
-            </button>
-          </div>
-        </div>
-        <div v-else class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-          <div class="max-w-lg">
-            <p class="mb-4 text-gray-700">Enter your RuleHook API key to connect your store:</p>
-            <div class="flex flex-col sm:flex-row gap-1">
-              <div class="flex-grow sm:w-96">
-                <input
-                  type="text"
-                  v-model="apiKey"
-                  placeholder="Enter your API key"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div class="mt-2 sm:mt-0">
-                <button
-                  type="button"
-                  @click="connectStore"
-                  class="rulehook-button is-primary text-sm px-3 py-1 w-full sm:w-auto"
-                >
-                  <span v-if="isConnecting" class="dashicons dashicons-update animate-spin"></span>
-                  Connect
-                </button>
-              </div>
+        <PlaceholderPattern v-if="isLoading" class="w-full h-24" />
+        <div v-else>
+          <div
+            v-if="isConnected"
+            class="flex flex-col sm:flex-row sm:justify-between sm:items-center"
+          >
+            <div class="text-gray-700">
+              <p v-if="connectionInfo.teamId" class="mb-1">
+                <span class="font-medium">Team ID:</span> {{ connectionInfo.teamId }}
+              </p>
+              <p v-if="connectionInfo.storeId" class="mb-1">
+                <span class="font-medium">Store ID:</span> {{ connectionInfo.storeId }}
+              </p>
             </div>
-            <p class="mt-2 text-xs text-gray-500">
-              Don't have an API key?
+
+            <div class="mt-4 sm:mt-0 flex gap-3">
               <a
-                :href="`${baseUrl}/register`"
+                :href="`${baseUrl}/dashboard`"
                 target="_blank"
-                class="text-indigo-600 hover:text-indigo-800"
-                >Create an account</a
+                class="rulehook-button is-primary text-sm px-4 py-2"
               >
-            </p>
+                Open Dashboard
+              </a>
+              <button
+                type="button"
+                @click="disconnect()"
+                class="rulehook-button is-secondary text-sm px-4 py-2"
+              >
+                <span v-if="isDisconnecting" class="dashicons dashicons-update animate-spin"></span>
+                Disconnect
+              </button>
+            </div>
+          </div>
+          <div v-else class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+            <div class="max-w-lg">
+              <p class="mb-4 text-gray-700">Enter your RuleHook API key to connect your store:</p>
+              <div class="flex flex-col sm:flex-row gap-1">
+                <div class="flex-grow sm:w-96">
+                  <input
+                    type="text"
+                    v-model="apiKey"
+                    placeholder="Enter your API key"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div class="mt-2 sm:mt-0">
+                  <button
+                    type="button"
+                    @click="connectStore"
+                    class="rulehook-button is-primary text-sm px-3 py-1 w-full sm:w-auto"
+                  >
+                    <span
+                      v-if="isConnecting"
+                      class="dashicons dashicons-update animate-spin"
+                    ></span>
+                    Connect
+                  </button>
+                </div>
+              </div>
+              <p class="mt-2 text-xs text-gray-500">
+                Don't have an API key?
+                <a
+                  :href="`${baseUrl}/register`"
+                  target="_blank"
+                  class="text-indigo-600 hover:text-indigo-800"
+                  >Create an account</a
+                >
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -231,69 +240,72 @@ const sync = () => {
         <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">Store Sync Status</p>
       </div>
       <div class="rulehook-card__body p-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center my-4 gap-4">
-          <button
-            type="button"
-            @click="sync()"
-            class="rulehook-button is-primary text-sm px-4 py-2"
-          >
-            <span v-if="isSyncing" class="dashicons dashicons-update animate-spin"></span>
+        <PlaceholderPattern v-if="isLoading" class="w-full h-32" />
+        <div v-else>
+          <div class="flex flex-col sm:flex-row items-start sm:items-center my-4 gap-4">
+            <button
+              type="button"
+              @click="sync()"
+              class="rulehook-button is-primary text-sm px-4 py-2"
+            >
+              <span v-if="isSyncing" class="dashicons dashicons-update animate-spin"></span>
 
-            Sync Now
-          </button>
+              Sync Now
+            </button>
 
-          <label class="inline-flex items-center">
-            <input
-              type="checkbox"
-              :checked="devMode"
-              @change="alert('toggleDevMode')"
-              class="form-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            />
-            <span class="ml-2 text-sm text-gray-700">Enable Dev Mode</span>
-          </label>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- Last Sync -->
-          <div class="status-card">
-            <div class="status-card-icon">
-              <span class="dashicons dashicons-calendar-alt"></span>
-            </div>
-            <div class="status-card-content">
-              <p class="status-card-label">Last Sync</p>
-              <p class="status-card-value">{{ formattedLastSync }}</p>
-            </div>
+            <label class="inline-flex items-center">
+              <input
+                type="checkbox"
+                :checked="devMode"
+                @change="alert('toggleDevMode')"
+                class="form-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded"
+              />
+              <span class="ml-2 text-sm text-gray-700">Enable Dev Mode</span>
+            </label>
           </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Last Sync -->
+            <div class="status-card">
+              <div class="status-card-icon">
+                <span class="dashicons dashicons-calendar-alt"></span>
+              </div>
+              <div class="status-card-content">
+                <p class="status-card-label">Last Sync</p>
+                <p class="status-card-value">{{ formattedLastSync }}</p>
+              </div>
+            </div>
 
-          <!-- Products Synced -->
-          <div class="status-card">
-            <div class="status-card-icon">
-              <span class="dashicons dashicons-products"></span>
+            <!-- Products Synced -->
+            <div class="status-card">
+              <div class="status-card-icon">
+                <span class="dashicons dashicons-products"></span>
+              </div>
+              <div class="status-card-content">
+                <p class="status-card-label">Products Synced</p>
+                <p class="status-card-value">{{ productsSynced }}</p>
+              </div>
             </div>
-            <div class="status-card-content">
-              <p class="status-card-label">Products Synced</p>
-              <p class="status-card-value">{{ productsSynced }}</p>
-            </div>
-          </div>
 
-          <!-- Shipping Zones -->
-          <div class="status-card">
-            <div class="status-card-icon">
-              <span class="dashicons dashicons-location"></span>
+            <!-- Shipping Zones -->
+            <div class="status-card">
+              <div class="status-card-icon">
+                <span class="dashicons dashicons-location"></span>
+              </div>
+              <div class="status-card-content">
+                <p class="status-card-label">Shipping Zones</p>
+                <p class="status-card-value">{{ shippingZonesSynced }}</p>
+              </div>
             </div>
-            <div class="status-card-content">
-              <p class="status-card-label">Shipping Zones</p>
-              <p class="status-card-value">{{ shippingZonesSynced }}</p>
-            </div>
-          </div>
 
-          <!-- Currency -->
-          <div class="status-card">
-            <div class="status-card-icon">
-              <span class="dashicons dashicons-money-alt"></span>
-            </div>
-            <div class="status-card-content">
-              <p class="status-card-label">Currency</p>
-              <p class="status-card-value">{{ currency }}</p>
+            <!-- Currency -->
+            <div class="status-card">
+              <div class="status-card-icon">
+                <span class="dashicons dashicons-money-alt"></span>
+              </div>
+              <div class="status-card-content">
+                <p class="status-card-label">Currency</p>
+                <p class="status-card-value">{{ currency }}</p>
+              </div>
             </div>
           </div>
         </div>
