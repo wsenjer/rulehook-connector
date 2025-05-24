@@ -41,6 +41,19 @@ const connectStore = () => {
         connectionInfo.value.teamId = response.data.teamId
         toast.success('Store connected successfully.')
       }
+      if(response.data.reason) {
+        const actionName = response.data.reason === 'inactive' ? 'Activate Key' : 'Generate Key';
+
+        toast.error('Error', {
+          description: response.data.message,
+          action: {
+            label: actionName,
+            onClick: (e) => {
+              e.preventDefault();
+              window.location.href = `${baseUrl.value}/settings/api-keys`
+            }
+        }})
+      }
     })
     .catch((error) => {
       if (error.response && error.response.status === 401) {
@@ -386,7 +399,7 @@ const saveShippingMethodSettings = () => {
 
 /* WooCommerce-like styling */
 .rulehook-layout {
-  @apply max-w-6xl my-8 p-4 text-gray-700;
+  @apply max-w-5xl my-8 p-4 text-gray-700;
 }
 
 .rulehook-card {
