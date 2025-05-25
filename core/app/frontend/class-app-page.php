@@ -45,6 +45,7 @@ class App_Page
             [
                 'nonces' => Endpoints_Factory::get_endpoints_nonce(),
                 'store_currency_symbol' => get_woocommerce_currency_symbol(),
+                'plugin_uri' => plugin_dir_url(__FILE__),
             ]
         );
 

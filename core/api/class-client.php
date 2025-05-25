@@ -103,12 +103,14 @@ class Client
         return $decodedResponse;
     }
 
-    public function validateApiKey(string $storeId): array
+    public function validateApiKey(string $storeId, string $storeName): array
     {
         $response = $this->request('POST', '/v1/validate-api-key',
             [
                 'apiKey' => $this->accessToken,
                 'storeId' => $storeId,
+                'storeName' => $storeName,
+                'platform' => 'woocommerce',
             ]);
 
         return $response;

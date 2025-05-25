@@ -20,10 +20,10 @@ class Validate_Api_Key_Endpoint extends Abstract_Endpoint
         $api_key = sanitize_text_field($data['apiKey']);
 
         $client = new Client(Constants::API_URL, $api_key);
-        $siteDomain = parse_url(home_url(), PHP_URL_HOST);
-
+        $storeDomain = parse_url(home_url(), PHP_URL_HOST);
+        $storeName = get_bloginfo('name');
         try {
-            $response = $client->validateApiKey($siteDomain);
+            $response = $client->validateApiKey($storeDomain, $storeName);
         } catch (Exception $e) {
             $responseData = $e->getResponseData();
             if (isset($responseData['reason'])) {

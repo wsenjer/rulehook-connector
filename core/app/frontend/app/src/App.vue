@@ -5,6 +5,7 @@ import 'vue-sonner/style.css'
 
 import api from '@/composable/api.js'
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue'
+import Badge from "@/components/Badge.vue";
 
 const shippingMethodEnabled = ref(false)
 const methodTitle = ref('Shipping')
@@ -14,6 +15,7 @@ const connectionInfo = ref({
   teamId: '',
 })
 
+const pluginUri = ref(window.rulehook.plugin_uri)
 const isConnected = ref(false)
 const apiKey = ref('')
 const baseUrl = ref('http://127.0.0.1:8000')
@@ -105,6 +107,7 @@ const sync = () => {
     .then((response) => {
       if (response.data.ok) {
         toast.success('Store synced successfully.')
+        loadApp()
       }
 
       if (response.data.error) {
@@ -188,7 +191,10 @@ const saveShippingMethodSettings = () => {
     <!-- Header Section -->
     <div class="rulehook-card mb-6">
       <div class="rulehook-card__header border-b border-gray-200 pb-4">
-        <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">RuleHook.com Integration</p>
+
+        <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">
+          <img :src="pluginUri + 'app/dist/rulehook.png'" alt="RuleHook Logo" class="h-5 border-indigo-500 border-2 inline-block" /> RuleHook.com Integration
+        </p>
       </div>
       <div class="rulehook-card__body p-4">
         <PlaceholderPattern v-if="isLoading" class="w-full h-24" />
@@ -198,15 +204,20 @@ const saveShippingMethodSettings = () => {
             class="flex flex-col sm:flex-row sm:justify-between sm:items-center"
           >
             <div class="text-gray-700">
-              <p v-if="connectionInfo.teamId" class="mb-1">
-                <span class="font-medium">Team ID:</span> {{ connectionInfo.teamId }}
-              </p>
-              <p v-if="connectionInfo.storeId" class="mb-1">
-                <span class="font-medium">Store ID:</span> {{ connectionInfo.storeId }}
-              </p>
+             <div>
+
+
+               <Badge label="Status" value="Connected" variant="success" with-pulse outline class="mx-2" />
+               <Badge label="Team ID" :value="connectionInfo.teamId" variant="info" outline class="mx-2" />
+               <Badge label="Store ID" :value="connectionInfo.storeId" variant="info" outline class="mx-2" />
+
+
+             </div>
+
             </div>
 
             <div class="mt-4 sm:mt-0 flex gap-3">
+
               <a
                 :href="`${baseUrl}/dashboard`"
                 target="_blank"
@@ -342,7 +353,6 @@ const saveShippingMethodSettings = () => {
       </div>
     </div>
 
-    <!-- Add this new section after the Store Sync Status card -->
     <div class="rulehook-card mb-6">
       <div class="rulehook-card__header border-b border-gray-200">
         <p class="text-2xl font-bold text-gray-900 !p-0 !m-0">Shipping Method Settings</p>
