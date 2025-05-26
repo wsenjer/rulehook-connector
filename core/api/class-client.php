@@ -73,7 +73,7 @@ class Client
         if (is_wp_error($response)) {
             throw new Exception(
                 'API request failed: '.$response->get_error_message(),
-                $response->get_error_code()
+                500
             );
         }
 

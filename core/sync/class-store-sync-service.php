@@ -58,6 +58,8 @@ class Store_Sync_Service
         $payload['currency'] = get_woocommerce_currency();
         $payload['products'] = $this->getNormalizedProducts();
         $payload['shipping_zones'] = $this->getNormalizedShippingZones();
+        $payload['coupons'] = $this->getCoupons();
+
 
         return $payload;
 
@@ -100,11 +102,11 @@ class Store_Sync_Service
                     $shipping_class = $shipping_class_term->name;
                 }
             }
-
             // Add simple product or variable parent
             $normalizedProducts[] = [
                 'id' => $product->get_id(),
                 'name' => $product->get_name(),
+                'price' => intval($product->get_price()) * 100, // Convert to cents
                 'weight' => (float) $product->get_weight(),
                 'tags' => $tags,
                 'shipping_class' => $shipping_class,
@@ -119,6 +121,7 @@ class Store_Sync_Service
                         $normalizedProducts[] = [
                             'id' => $variation->get_id(),
                             'name' => $variation->get_name(),
+                            'price' =>  intval($variation->get_price()) * 100, // Convert to cents
                             'weight' => (float) $variation->get_weight(),
                             'tags' => $tags, // Variations share the parent's tags
                             'shipping_class' => $variation->get_shipping_class() ?: $shipping_class,
@@ -231,5 +234,28 @@ class Store_Sync_Service
         $zonesSynced = $result['zones_synced'] ?? 0;
         update_option(Constants::SHIPPING_ZONES_SYNCED_KEY, $zonesSynced);
 
+    }
+
+    private function getCoupons(): array
+    {
+        $coupons = [];
+        $args = [
+            'post_type' => 'shop_coupon',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+        ];
+
+        $coupon_posts = get_posts($args);
+        foreach ($coupon_posts as $coupon_post) {
+            $coupon = new \WC_Coupon($coupon_post->ID);
+            $coupons[] = [
+                'id' => $coupon->get_id(),
+                'code' => $coupon->get_code(),
+                'amount' => intval($coupon->get_amount()) * 100, // Convert to cents
+                'type' => $coupon->get_discount_type(),
+            ];
+        }
+
+        return $coupons;
     }
 }
