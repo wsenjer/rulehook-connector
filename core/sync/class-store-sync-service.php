@@ -54,7 +54,8 @@ class Store_Sync_Service
         $payload = [];
         $payload['team_id'] = get_option(Constants::TEAM_ID_KEY);
         $payload['store_id'] = parse_url(home_url(), PHP_URL_HOST);
-        $payload['base_location'] = $storeBaseLocation;
+        $payload['base_country'] = (isset($storeBaseLocation['country'])) ? $storeBaseLocation['country'] : '';
+        $payload['base_state'] = (isset($storeBaseLocation['state'])) ? $storeBaseLocation['state'] : '';
         $payload['currency'] = get_woocommerce_currency();
         $payload['products'] = $this->getNormalizedProducts();
         $payload['shipping_zones'] = $this->getNormalizedShippingZones();
