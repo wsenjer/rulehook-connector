@@ -61,6 +61,11 @@ class Store_Sync_Service
         $payload['shipping_zones'] = $this->getNormalizedShippingZones();
         $payload['coupons'] = $this->getCoupons();
 
+        $payload['product_categories'] = $this->getProductCategories();
+        $payload['product_tags'] = $this->getProductTags();
+        $payload['shipping_classes'] = $this->getShippingClasses();
+        $payload['user_roles'] = $this->getUserRoles();
+        $payload['product_attributes'] = $this->getProductAttributes();
 
         return $payload;
 
@@ -122,7 +127,7 @@ class Store_Sync_Service
                         $normalizedProducts[] = [
                             'id' => $variation->get_id(),
                             'name' => $variation->get_name(),
-                            'price' =>  intval($variation->get_price()) * 100, // Convert to cents
+                            'price' => intval($variation->get_price()) * 100, // Convert to cents
                             'weight' => (float) $variation->get_weight(),
                             'tags' => $tags, // Variations share the parent's tags
                             'shipping_class' => $variation->get_shipping_class() ?: $shipping_class,
@@ -258,5 +263,123 @@ class Store_Sync_Service
         }
 
         return $coupons;
+    }
+
+    private function getProductCategories(): array
+    {
+        $categories = [];
+        $args = [
+            'taxonomy' => 'product_cat',
+            'hide_empty' => false,
+        ];
+
+        $terms = get_terms($args);
+        foreach ($terms as $term) {
+            if (! is_wp_error($term)) {
+                $categories[] = [
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                ];
+            }
+        }
+
+        return $categories;
+
+    }
+
+    public function getProductTags(): array
+    {
+        $tags = [];
+        $args = [
+            'taxonomy' => 'product_tag',
+            'hide_empty' => false,
+        ];
+
+        $terms = get_terms($args);
+        foreach ($terms as $term) {
+            if (! is_wp_error($term)) {
+                $tags[] = [
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                ];
+            }
+        }
+
+        return $tags;
+
+    }
+
+    public function getShippingClasses(): array
+    {
+        $shipping_classes = [];
+        $args = [
+            'taxonomy' => 'product_shipping_class',
+            'hide_empty' => false,
+        ];
+
+        $terms = get_terms($args);
+        foreach ($terms as $term) {
+            if (! is_wp_error($term)) {
+                $shipping_classes[] = [
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                ];
+            }
+        }
+
+        return $shipping_classes;
+
+    }
+
+    public function getUserRoles(): array
+    {
+        $roles = [];
+        $wp_roles = wp_roles()->roles;
+
+        foreach ($wp_roles as $role => $details) {
+            $roles[] = [
+                'id' => $role,
+                'name' => $details['name'],
+            ];
+        }
+
+        return $roles;
+    }
+
+    public function getProductAttributes(): array
+    {
+        $product_attributes = [];
+        $attribute_taxonomies = wc_get_attribute_taxonomies();
+        foreach ($attribute_taxonomies as $attribute) {
+            $product_attributes[] = [
+                'id' => intval($attribute->attribute_id),
+                'name' => $attribute->attribute_label,
+                'terms' => $this->getTaxonomy('pa_'.$attribute->attribute_name),
+            ];
+        }
+
+        return $product_attributes;
+
+    }
+
+    private function getTaxonomy(string $taxonomy): array
+    {
+        $terms = get_terms([
+            'taxonomy' => $taxonomy,
+            'hide_empty' => false,
+        ]);
+
+        $result = [];
+        foreach ($terms as $term) {
+            if (! is_wp_error($term)) {
+                $result[] = [
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                ];
+            }
+        }
+
+        return $result;
+
     }
 }
