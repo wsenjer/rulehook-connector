@@ -54,6 +54,7 @@ class Client
         $args = [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->accessToken,
+                'X-Session-ID'     => $this->getOrCreateSessionId(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
@@ -73,7 +74,7 @@ class Client
         if (is_wp_error($response)) {
             throw new Exception(
                 'API request failed: '.$response->get_error_message(),
-                $response->get_error_code()
+                500
             );
         }
 
@@ -101,5 +102,31 @@ class Client
         }
 
         return $decodedResponse;
+    }
+
+    public function validateApiKey(string $storeId, string $storeName): array
+    {
+        $response = $this->request('POST', '/v1/validate-api-key',
+            [
+                'apiKey' => $this->accessToken,
+                'storeId' => $storeId,
+                'storeName' => $storeName,
+                'platform' => 'woocommerce',
+            ]);
+
+        return $response;
+
+    }
+
+    private function getOrCreateSessionId() {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        if (empty($_SESSION['rulehook_session_id'])) {
+            $_SESSION['rulehook_session_id'] = wp_generate_uuid4();
+        }
+
+        return $_SESSION['rulehook_session_id'];
     }
 }

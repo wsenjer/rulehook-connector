@@ -8,7 +8,7 @@ class Hide_Other_Methods_Action extends Abstract_Action
 {
     public function execute()
     {
-        add_filter('woocommerce_package_rates', [$this, 'hide_shipping_when_table_rate_is_available'], 10, 2);
+        add_filter('woocommerce_package_rates', [$this, 'hide_shipping_when_rulehook_is_available'], 10, 2);
     }
 
     /**
@@ -18,7 +18,7 @@ class Hide_Other_Methods_Action extends Abstract_Action
      * @param  array  $package  The package array/object being shipped
      * @return array of modified rates
      */
-    public function hide_shipping_when_table_rate_is_available($rates, $package)
+    public function hide_shipping_when_rulehook_is_available($rates, $package)
     {
         $new_rates = Helper::filter_table_rates($rates);
 

@@ -46,7 +46,11 @@ class Endpoints_Factory
     {
         return [
             Load_App_Data_Endpoint::class,
-            Find_Product_Endpoint::class,
+            Validate_Api_Key_Endpoint::class,
+            Disconnect_Endpoint::class,
+            Sync_Endpoint::class,
+            Toggle_Dev_Mode_Endpoint::class,
+            Save_Shipping_Settings_Endpoint::class,
         ];
     }
 }

@@ -11,27 +11,19 @@ class Subtitle_Action extends Abstract_Action
 
     public function add_subtitle($method)
     {
-        $instance_id = $method->get_instance_id();
+
         $meta_data = $method->get_meta_data();
 
-        if (! isset($meta_data['instance_id'])) {
+        if (! isset($meta_data['actions'])) {
             return;
         }
 
-        if (intval($meta_data['instance_id']) !== intval($instance_id)) {
-            return;
-        }
-
-        if (! isset($meta_data['matched_rules_ids'])) {
-            return;
-        }
-
-        if (! in_array($this->rule_id, $meta_data['matched_rules_ids'])) {
+        if (! in_array('add_subtitle', $meta_data['actions'])) {
             return;
         }
 
         $subtitle = $this->payload['subtitle'];
 
-        echo "<br><span style='color: #ccc;'>$subtitle</span>";
+        echo "<br><small style='color: #9f9f9f;'>$subtitle</small>";
     }
 }

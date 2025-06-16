@@ -12,7 +12,7 @@ class Helper
          * @var WC_Shipping_Rate $rate
          */
         foreach ($rates as $key => $rate) {
-            if ($rate->get_method_id() !== 'simple_table_rates') {
+            if ($rate->get_method_id() !== 'rulehook') {
                 continue;
             }
             // To unset all methods except for free_shipping, do the following
