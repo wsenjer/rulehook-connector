@@ -6,7 +6,7 @@ class Show_Notice_Action extends Abstract_Action
 {
     public function execute()
     {
-        $type = $this->payload['type'];
+        $type = 'notice';
         $message = $this->payload['message'];
 
         wc_add_notice($message, $type);

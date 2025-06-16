@@ -13,8 +13,8 @@ class Shipping_Method extends \WC_Shipping_Method
         $this->id = 'rulehook';
         $this->method_title = __('Rule Hook', 'rulehook');
         $this->method_description = __('Dynamic shipping rates based on rules from rulehook.com', 'rulehook');
-        $this->enabled = 'yes';
-        $this->title = __('Shipping', 'rulehook');
+        $this->enabled = $this->get_option('enabled', 'yes');
+        $this->title = $this->get_option('title', __('Shipping', 'rulehook'));
 
         $this->init();
     }
@@ -49,7 +49,7 @@ class Shipping_Method extends \WC_Shipping_Method
 
     public function calculate_shipping($package = [])
     {
-        $calculator = new Calculator;
+        $calculator = new Calculator($this->title);
         $rates = $calculator->calculate($package);
         foreach ($rates as $rate) {
             $this->add_rate($rate->getWoocommerceRate());

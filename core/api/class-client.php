@@ -54,6 +54,7 @@ class Client
         $args = [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->accessToken,
+                'X-Session-ID'     => $this->getOrCreateSessionId(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
@@ -115,5 +116,17 @@ class Client
 
         return $response;
 
+    }
+
+    private function getOrCreateSessionId() {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        if (empty($_SESSION['rulehook_session_id'])) {
+            $_SESSION['rulehook_session_id'] = wp_generate_uuid4();
+        }
+
+        return $_SESSION['rulehook_session_id'];
     }
 }

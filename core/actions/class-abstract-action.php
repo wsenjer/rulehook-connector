@@ -8,5 +8,10 @@ abstract class Abstract_Action
 
     public $payload = [];
 
+    public function __construct(array $payload)
+    {
+        $this->payload = $payload;
+    }
+
     abstract public function execute();
 }

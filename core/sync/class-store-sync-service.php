@@ -71,7 +71,7 @@ class Store_Sync_Service
 
     }
 
-    private function getNormalizedProducts(int $limit = 100): array
+    private function getNormalizedProducts(int $limit = 50000): array
     {
         $normalizedProducts = [];
 
