@@ -28,8 +28,14 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             'devMode' => (bool) get_option(Constants::DEV_MODE_KEY),
             'methodTitle' => isset($shippingMethodSettings['title']) ? $shippingMethodSettings['title'] : '',
             'shippingMethodEnabled' => $shippingMethodSettings['enabled'] === 'yes',
+            'connectionUrl' => $this->getConnectionUrl(),
         ];
 
+    }
+
+    private function getConnectionUrl(): string
+    {
+        return Constants::RULE_HOOK_URL . '/connect?site_url=' . urlencode(home_url()) . '&site_name=' . urlencode(get_bloginfo('name')) . '&source=woocommerce';
     }
 
     public function action()

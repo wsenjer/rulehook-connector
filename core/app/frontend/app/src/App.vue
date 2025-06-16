@@ -20,6 +20,7 @@ const isConnected = ref(false)
 const apiKey = ref('')
 const baseUrl = ref('http://127.0.0.1:8000')
 const apiEndpoint = ref('/api/v1/validate-api-key')
+const connectionUrl = ref('')
 
 const lastSyncTime = ref('')
 const currency = ref('USD')
@@ -31,42 +32,51 @@ const formattedLastSync = computed(() => {
 
 const isConnecting = ref(false)
 const connectStore = () => {
-  if (!apiKey.value) return
   isConnecting.value = true
-  const url = baseUrl.value + apiEndpoint.value
-  api
-    .post('', { apiKey: apiKey.value.trim(), action: 'rulehook_validate_api_key' })
-    .then((response) => {
-      if (response.data.valid && response.data.valid === true) {
-        isConnected.value = true
-        connectionInfo.value.storeId = response.data.storeId
-        connectionInfo.value.teamId = response.data.teamId
-        toast.success('Store connected successfully.')
-      }
-      if(response.data.reason) {
-        const actionName = response.data.reason === 'inactive' ? 'Activate Key' : 'Generate Key';
 
-        toast.error('Error', {
-          description: response.data.message,
-          action: {
-            label: actionName,
-            onClick: (e) => {
-              e.preventDefault();
-              window.location.href = `${baseUrl.value}/settings/api-keys`
-            }
-        }})
-      }
-    })
-    .catch((error) => {
-      if (error.response && error.response.status === 401) {
-        toast.error('Invalid API key. Please try again.')
-      } else {
-        toast.error('An error occurred while connecting to the store. Please try again later.')
-      }
-    })
-    .finally(() => {
-      isConnecting.value = false
-    })
+  // Open popup with specific dimensions and features for OAuth
+  const width = 600;
+  const height = 700;
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+
+  const popup = window.open(
+    connectionUrl.value,
+      'oauth-popup',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+  );
+
+  window.addEventListener('message', (event) => {
+    if (event.data.action === 'windowClosed') {
+      isConnecting.value = false;
+    }
+
+    if(event.data.action === 'connectionSuccess') {
+      api
+        .post('', { apiKey: event.data.apiKey, action: 'rulehook_validate_api_key' })
+        .then((response) => {
+          if (response.data.valid && response.data.valid === true) {
+            isConnected.value = true
+            connectionInfo.value.storeId = response.data.storeId
+            connectionInfo.value.teamId = response.data.teamId
+            toast.success('Store connected successfully.')
+          }
+        });
+    }
+  });
+
+
+  // Setup a polling mechanism to check if popup closed
+  const pollTimer = window.setInterval(() => {
+    if (popup.closed) {
+      window.clearInterval(pollTimer);
+      checkAuthStatus(); // Call function to verify authentication
+    }
+  }, 500);
+
+}
+
+const checkAuthStatus = () => {
 }
 const productsSynced = ref(0)
 const shippingZonesSynced = ref(0)
@@ -152,7 +162,9 @@ const loadApp = () => {
       devMode.value = response.data.devMode
       shippingMethodEnabled.value = response.data.shippingMethodEnabled
       methodTitle.value = response.data.methodTitle
+      connectionUrl.value = response.data.connectionUrl
       isLoading.value = false
+
     })
     .catch((error) => {
       toast.error('Error fetching connection info. Please try again later.')
@@ -235,42 +247,21 @@ const saveShippingMethodSettings = () => {
               </button>
             </div>
           </div>
-          <div v-else class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <div class="max-w-lg">
-              <p class="mb-4 text-gray-700">Enter your RuleHook API key to connect your store:</p>
-              <div class="flex flex-col sm:flex-row gap-1">
-                <div class="flex-grow sm:w-96">
-                  <input
-                    type="text"
-                    v-model="apiKey"
-                    placeholder="Enter your API key"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div class="mt-2 sm:mt-0">
-                  <button
-                    type="button"
-                    @click="connectStore"
-                    class="rulehook-button is-primary text-sm px-3 py-1 w-full sm:w-auto"
-                  >
-                    <span
-                      v-if="isConnecting"
-                      class="dashicons dashicons-update animate-spin"
-                    ></span>
-                    Connect
-                  </button>
-                </div>
-              </div>
-              <p class="mt-2 text-xs text-gray-500">
-                Don't have an API key?
-                <a
-                  :href="`${baseUrl}/register`"
-                  target="_blank"
-                  class="text-indigo-600 hover:text-indigo-800"
-                  >Create an account</a
-                >
-              </p>
-            </div>
+          <div v-else class="max-w-lg mx-auto flex flex-col items-center justify-center">
+            <button
+                type="button"
+                @click="connectStore"
+                class="rulehook-button is-primary text-sm px-4 py-1 w-auto"
+            >
+        <span
+            v-if="isConnecting"
+            class="dashicons dashicons-update animate-spin"
+        ></span>
+              Authorize This Site
+            </button>
+            <p class="mt-2 text-xs text-gray-500 text-center">
+              Start your RuleHook account or connect your site now to unlock advanced shipping logic that drives more sales, leads, and conversions.
+            </p>
           </div>
         </div>
       </div>
