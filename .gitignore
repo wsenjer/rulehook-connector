@@ -1,5 +1,5 @@
 .idea
-woocommerce-rulehook-connector.zip
+rulehook-connector.zip
 vendor
 .phpunit.result.cache
 .phpcs.xml.dist
