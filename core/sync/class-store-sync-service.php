@@ -58,7 +58,6 @@ class Store_Sync_Service
         $payload['base_state'] = (isset($storeBaseLocation['state'])) ? $storeBaseLocation['state'] : '';
         $payload['currency'] = get_woocommerce_currency();
         $payload['products'] = $this->getNormalizedProducts();
-        $payload['shipping_zones'] = $this->getNormalizedShippingZones();
         $payload['coupons'] = $this->getCoupons();
 
         $payload['product_categories'] = $this->getProductCategories();
@@ -140,93 +139,8 @@ class Store_Sync_Service
         return $normalizedProducts;
     }
 
-    /**
-     * Get all WooCommerce shipping zones and methods formatted for RuleHook sync
-     *
-     * @return array Normalized shipping zones array
-     */
-    private function getNormalizedShippingZones(): array
-    {
-        $normalizedZones = [];
-        $zones = \WC_Shipping_Zones::get_zones();
 
-        // Add each defined shipping zone
-        foreach ($zones as $zone_data) {
-            $zone = new \WC_Shipping_Zone($zone_data['id']);
-            $locations = [];
 
-            // Get zone locations
-            foreach ($zone->get_zone_locations() as $location) {
-                if ($location->type === 'country') {
-                    $locations[] = $location->code;
-                } elseif ($location->type === 'state') {
-                    $locations[] = $location->code;
-                } elseif ($location->type === 'postcode') {
-                    $locations[] = $location->code;
-                }
-            }
-
-            // Get shipping methods for this zone
-            $methods = [];
-            foreach ($zone->get_shipping_methods(true) as $method) {
-                $methods[] = [
-                    'id' => $method->id.':'.$method->instance_id,
-                    'title' => $method->title ?: $method->get_title(),
-                    'cost' => $this->getShippingMethodCost($method),
-                ];
-            }
-
-            $normalizedZones[] = [
-                'id' => $zone->get_id(),
-                'name' => $zone->get_zone_name(),
-                'locations' => ! empty($locations) ? $locations : ['*'],
-                'methods' => $methods,
-            ];
-        }
-
-        // Add the "Rest of the World" zone
-        $rest_of_world = new \WC_Shipping_Zone(0);
-        $row_methods = [];
-
-        foreach ($rest_of_world->get_shipping_methods(true) as $method) {
-            $row_methods[] = [
-                'id' => $method->id.':'.$method->instance_id,
-                'title' => $method->title ?: $method->get_title(),
-                'cost' => $this->getShippingMethodCost($method),
-            ];
-        }
-
-        $normalizedZones[] = [
-            'id' => 0,
-            'name' => $rest_of_world->get_zone_name(),
-            'locations' => ['*'],
-            'methods' => $row_methods,
-        ];
-
-        return $normalizedZones;
-    }
-
-    /**
-     * Get the cost of a shipping method
-     *
-     * @param  \WC_Shipping_Method  $method  Shipping method object
-     * @return float Shipping method cost
-     */
-    private function getShippingMethodCost($method): float
-    {
-        // Different shipping methods store cost in different ways
-        if ($method->id === 'flat_rate' && isset($method->instance_settings['cost'])) {
-            return (float) $method->instance_settings['cost'];
-        } elseif ($method->id === 'free_shipping') {
-            return 0.0;
-        } elseif (isset($method->cost)) {
-            return (float) $method->cost;
-        } elseif (isset($method->instance_settings) && isset($method->instance_settings['cost'])) {
-            return (float) $method->instance_settings['cost'];
-        }
-
-        return 0.0;
-    }
 
     private function updateSyncData(array $result): void
     {
