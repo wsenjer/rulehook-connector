@@ -29,7 +29,6 @@ class Calculator
         }
 
         $cart_data = $this->build_cart_payload($package);
-
         try {
             $client = new Client(Constants::API_URL, $api_key);
             $evaluator = new Evaluator($client);

@@ -151,8 +151,8 @@ class Store_Sync_Service
         $productsSynced = $result['products_synced'] ?? 0;
         update_option(Constants::PRODUCTS_SYNCED_KEY, $productsSynced);
 
-        $zonesSynced = $result['zones_synced'] ?? 0;
-        update_option(Constants::SHIPPING_ZONES_SYNCED_KEY, $zonesSynced);
+        $shippingClassesSynced = $result['shipping_classes_synced'] ?? 0;
+        update_option(Constants::SHIPPING_CLASSES_SYNCED_KEY, $shippingClassesSynced);
 
     }
 

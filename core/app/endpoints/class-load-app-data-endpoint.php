@@ -13,7 +13,7 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             $lastSyncedTime = human_time_diff(strtotime($lastSyncedTime));
         }
         $productsSynced = get_option(Constants::PRODUCTS_SYNCED_KEY);
-        $shippingZonesSynced = get_option(Constants::SHIPPING_ZONES_SYNCED_KEY);
+        $shippingClassesSynced = get_option(Constants::SHIPPING_CLASSES_SYNCED_KEY);
 
         $shippingMethodSettings = get_option('woocommerce_rulehook_settings');
 
@@ -24,7 +24,7 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             'lastSyncTime' => $lastSyncedTime.' ago',
             'currency' => get_woocommerce_currency(),
             'productsSynced' => $productsSynced !== false ? $productsSynced : 0,
-            'shippingZonesSynced' => $shippingZonesSynced !== false ? $shippingZonesSynced : 0,
+            'shippingClassesSynced' => $shippingClassesSynced !== false ? $shippingClassesSynced : 0,
             'devMode' => (bool) get_option(Constants::DEV_MODE_KEY),
             'methodTitle' => isset($shippingMethodSettings['title']) ? $shippingMethodSettings['title'] : '',
             'shippingMethodEnabled' => $shippingMethodSettings['enabled'] === 'yes',

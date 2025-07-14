@@ -8,7 +8,6 @@ import PlaceholderPattern from '@/components/PlaceholderPattern.vue'
 import Badge from "@/components/Badge.vue";
 
 const shippingMethodEnabled = ref(false)
-const methodTitle = ref('Shipping')
 
 const connectionInfo = ref({
   storeId: '',
@@ -60,6 +59,7 @@ const connectStore = () => {
             connectionInfo.value.storeId = response.data.storeId
             connectionInfo.value.teamId = response.data.teamId
             toast.success('Store connected successfully.')
+            sync()
           }
         });
     }
@@ -79,7 +79,7 @@ const connectStore = () => {
 const checkAuthStatus = () => {
 }
 const productsSynced = ref(0)
-const shippingZonesSynced = ref(0)
+const shippingClassesSynced = ref(0)
 const isLoading = ref(true)
 onMounted(() => {
   window.addEventListener('beforeunload', function (event) {
@@ -157,11 +157,10 @@ const loadApp = () => {
         lastSyncTime.value = response.data.lastSyncTime
         currency.value = response.data.currency
         productsSynced.value = response.data.productsSynced
-        shippingZonesSynced.value = response.data.shippingZonesSynced
+        shippingClassesSynced.value = response.data.shippingClassesSynced
       }
       devMode.value = response.data.devMode
       shippingMethodEnabled.value = response.data.shippingMethodEnabled
-      methodTitle.value = response.data.methodTitle
       connectionUrl.value = response.data.connectionUrl
       isLoading.value = false
 
@@ -179,7 +178,6 @@ const saveShippingMethodSettings = () => {
     .post('', {
       action: 'rulehook_save_shipping_settings',
       shippingMethodEnabled: shippingMethodEnabled.value,
-      methodTitle: methodTitle.value,
     })
     .then((response) => {
       if (response.data.ok) {
@@ -220,7 +218,6 @@ const saveShippingMethodSettings = () => {
 
 
                <Badge label="Status" value="Connected" variant="success" with-pulse outline class="mx-2" />
-               <Badge label="Team ID" :value="connectionInfo.teamId" variant="info" outline class="mx-2" />
                <Badge label="Store ID" :value="connectionInfo.storeId" variant="info" outline class="mx-2" />
 
 
@@ -324,8 +321,8 @@ const saveShippingMethodSettings = () => {
                 <span class="dashicons dashicons-location"></span>
               </div>
               <div class="status-card-content">
-                <p class="status-card-label">Shipping Zones</p>
-                <p class="status-card-value">{{ shippingZonesSynced }}</p>
+                <p class="status-card-label">Shipping Classes</p>
+                <p class="status-card-value">{{ shippingClassesSynced }}</p>
               </div>
             </div>
 
@@ -362,32 +359,18 @@ const saveShippingMethodSettings = () => {
             </label>
 
             <div class="mt-4">
-              <label for="method-title" class="block text-sm font-medium text-gray-700 mb-1">
-                Method Title
-              </label>
-              <div class="flex-grow sm:w-full md:w-full lg:w-2/5">
-                <input
-                  id="method-title"
-                  type="text"
-                  v-model="methodTitle"
-                  placeholder="Shipping"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                />
+              <button
+                type="button"
+                @click="saveShippingMethodSettings"
+                class="rulehook-button is-primary text-sm px-4 py-2 mt-4 block"
+                :disabled="isSavingSettings"
+              >
+                <span v-if="isSavingSettings" class="dashicons dashicons-update animate-spin"></span>
+                Save Settings
+              </button>
               </div>
 
-              <p class="text-xs text-gray-500 mt-1">
-                This controls the title seen by customers during checkout.
-              </p>
-            </div>
-            <button
-              type="button"
-              @click="saveShippingMethodSettings"
-              class="rulehook-button is-primary text-sm px-4 py-2 mt-4"
-              :disabled="isSavingSettings"
-            >
-              <span v-if="isSavingSettings" class="dashicons dashicons-update animate-spin"></span>
-              Save Settings
-            </button>
+
           </div>
         </div>
       </div>

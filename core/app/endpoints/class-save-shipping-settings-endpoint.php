@@ -11,14 +11,12 @@ class Save_Shipping_Settings_Endpoint extends Abstract_Endpoint
         }
 
         $enabled = filter_var($data['shippingMethodEnabled'], FILTER_VALIDATE_BOOLEAN) ? 'yes' : 'no';
-        $title = sanitize_text_field($data['methodTitle']);
 
         // Get the existing settings
         $rulehook_settings = get_option('woocommerce_rulehook_settings', []);
 
         // Update with new values
         $rulehook_settings['enabled'] = $enabled;
-        $rulehook_settings['title'] = $title;
 
         // Save to WooCommerce options
         update_option('woocommerce_rulehook_settings', $rulehook_settings);
