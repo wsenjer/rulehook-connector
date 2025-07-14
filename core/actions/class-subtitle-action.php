@@ -18,7 +18,7 @@ class Subtitle_Action extends Abstract_Action
             return;
         }
 
-        if (! in_array('add_subtitle', $meta_data['actions'])) {
+        if (! in_array('set_subtitle', $meta_data['actions'])) {
             return;
         }
 

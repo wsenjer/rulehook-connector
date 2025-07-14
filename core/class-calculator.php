@@ -48,7 +48,7 @@ class Calculator
 
                 $woocommerceRates[] = (new Rate)
                     ->setId('rulehook:'.sanitize_title($rate['id']))
-                    ->setLabel(sprintf('%s (%s)', $this->shipping_title, sanitize_text_field($rate['label'])))
+                    ->setLabel(sprintf('%s (%s)', sanitize_text_field($rate['label']), $rate['eta']))
                     ->setCost(floatval($rate['cost']))
                     ->setMetaData(
                         [
@@ -116,9 +116,9 @@ class Calculator
             $ruleAction = Actions_Factory::make($action['type'], $action['payload']);
             if (! $ruleAction) {
                 error_log("Unknown action type: {$action['type']}");
-
                 continue; // Skip unknown actions
             }
+
             $ruleAction->execute();
         }
 

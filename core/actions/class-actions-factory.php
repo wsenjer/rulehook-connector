@@ -9,7 +9,7 @@ class Actions_Factory
         $actions = [
             'show_notice' => Show_Notice_Action::class,
             'rename_method' => Rename_Method_Action::class,
-            'add_subtitle' => Subtitle_Action::class,
+            'set_subtitle' => Subtitle_Action::class,
             'hide_other_methods' => Hide_Other_Methods_Action::class,
         ];
 
