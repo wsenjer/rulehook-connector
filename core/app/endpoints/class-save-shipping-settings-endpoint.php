@@ -6,7 +6,7 @@ class Save_Shipping_Settings_Endpoint extends Abstract_Endpoint
 {
     public function callback($data)
     {
-        if (! isset($data['shippingMethodEnabled']) || ! isset($data['methodTitle'])) {
+        if (! isset($data['shippingMethodEnabled'])) {
             $this->abort('Missing required fields');
         }
 

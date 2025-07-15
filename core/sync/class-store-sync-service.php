@@ -154,6 +154,9 @@ class Store_Sync_Service
         $shippingClassesSynced = $result['shipping_classes_synced'] ?? 0;
         update_option(Constants::SHIPPING_CLASSES_SYNCED_KEY, $shippingClassesSynced);
 
+        $categoriesSynced = $result['categories_synced'] ?? 0;
+        update_option(Constants::CATEGORIES_SYNCED_KEY, $categoriesSynced);
+
     }
 
     private function getCoupons(): array

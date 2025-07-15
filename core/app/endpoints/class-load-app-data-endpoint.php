@@ -14,6 +14,7 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
         }
         $productsSynced = get_option(Constants::PRODUCTS_SYNCED_KEY);
         $shippingClassesSynced = get_option(Constants::SHIPPING_CLASSES_SYNCED_KEY);
+        $categoriesSynced = get_option(Constants::CATEGORIES_SYNCED_KEY);
 
         $shippingMethodSettings = get_option('woocommerce_rulehook_settings');
 
@@ -22,11 +23,10 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             'isConnected' => ! empty(get_option(Constants::API_KEY_KEY)),
             'storeId' => parse_url(home_url(), PHP_URL_HOST),
             'lastSyncTime' => $lastSyncedTime.' ago',
-            'currency' => get_woocommerce_currency(),
             'productsSynced' => $productsSynced !== false ? $productsSynced : 0,
             'shippingClassesSynced' => $shippingClassesSynced !== false ? $shippingClassesSynced : 0,
+            'categoriesSynced' => $categoriesSynced !== false ? $categoriesSynced : 0,
             'devMode' => (bool) get_option(Constants::DEV_MODE_KEY),
-            'methodTitle' => isset($shippingMethodSettings['title']) ? $shippingMethodSettings['title'] : '',
             'shippingMethodEnabled' => $shippingMethodSettings['enabled'] === 'yes',
             'connectionUrl' => $this->getConnectionUrl(),
         ];
