@@ -29,6 +29,7 @@ class Calculator
         }
 
         $cart_data = $this->build_cart_payload($package);
+
         try {
             $client = new Client(Constants::API_URL, $api_key);
             $evaluator = new Evaluator($client);
@@ -48,7 +49,13 @@ class Calculator
 
                 $woocommerceRates[] = (new Rate)
                     ->setId('rulehook:'.sanitize_title($rate['id']))
-                    ->setLabel(sprintf('%s (%s)', sanitize_text_field($rate['label']), $rate['eta']))
+                    ->setLabel(
+                        sprintf(
+                            '%s%s',
+                            sanitize_text_field($rate['label']),
+                            !empty($rate['eta']) ? ' (' . $rate['eta'] . ')' : ''
+                        )
+                    )
                     ->setCost(floatval($rate['cost']))
                     ->setMetaData(
                         [

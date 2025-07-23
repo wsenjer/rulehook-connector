@@ -35,7 +35,6 @@ class Evaluator
     public function evaluateRates(array $cartData): array
     {
         $response = $this->client->request('POST', 'v1/evaluate', $cartData);
-
         if (! isset($response['rates']) || ! is_array($response['rates'])) {
             throw new Exception('Invalid response: missing rates data');
         }
