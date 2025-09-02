@@ -11,7 +11,7 @@ class Shipping_Method extends \WC_Shipping_Method
     public function __construct()
     {
         $this->id = 'rulehook';
-        $this->method_title = __('Rule Hook', 'rulehook');
+        $this->method_title = __('RuleHook', 'rulehook');
         $this->method_description = __('Dynamic shipping rates based on rules from rulehook.com', 'rulehook');
         $this->enabled = $this->get_option('enabled', 'yes');
         $this->title = $this->get_option('title', __('Shipping', 'rulehook'));
