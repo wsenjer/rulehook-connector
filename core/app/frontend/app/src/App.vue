@@ -16,7 +16,7 @@ const connectionInfo = ref({
 const pluginUri = ref(window.rulehook.plugin_uri)
 const isConnected = ref(false)
 const apiKey = ref('')
-const baseUrl = ref('http://127.0.0.1:8000')
+const baseUrl = ref('https://rulehook.com')
 const connectionUrl = ref('')
 
 const lastSyncTime = ref('')
