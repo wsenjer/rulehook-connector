@@ -39,7 +39,7 @@ class App_Page
             return;
         }
 
-        wp_enqueue_script('rulehook-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION, true);
+        wp_enqueue_script('rulehook-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION . microtime(), true);
 
         wp_localize_script('rulehook-app', 'rulehook',
             [
