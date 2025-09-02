@@ -26,7 +26,7 @@ class Calculator
         $package_hash = $this->get_package_hash( $package );
 
         if ( isset(self::$in_process[$package_hash]) ) {
-            return []; // already computed this request
+            return self::$in_process[$package_hash]; // already computed this request
         }
 
         self::$in_process[$package_hash] = true;
@@ -78,6 +78,8 @@ class Calculator
                     );
 
             }
+
+            self::$in_process[$package_hash] = $woocommerceRates;
 
             return $woocommerceRates;
 
