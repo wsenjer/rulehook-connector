@@ -9,6 +9,8 @@ use RuleHook\Core\Api\Exception;
 
 class Calculator
 {
+    private static $in_process = [];
+
     private string $shipping_title = 'Shipping';
 
     public function __construct(string $shipping_title)
@@ -21,6 +23,14 @@ class Calculator
      */
     public function calculate(array $package): array
     {
+        $package_hash = $this->get_package_hash( $package );
+
+        if ( isset(self::$in_process[$package_hash]) ) {
+            return []; // already computed this request
+        }
+
+        self::$in_process[$package_hash] = true;
+
         $api_key = get_option(Constants::API_KEY_KEY);
 
         if (! $api_key) {
@@ -130,4 +140,21 @@ class Calculator
         }
 
     }
+
+    protected function get_package_hash( $package ) {
+        $payload = [
+            'dest' => $package['destination'],
+            'items' => array_map(function($i){
+                return [
+                    'id' => $i['product_id'],
+                    'qty' => $i['quantity'],
+                    'w' => $i['data']->get_weight(),
+                    'd' => $i['data']->get_dimensions(false),
+                    'price' => $i['data']->get_price(),
+                ];
+            }, $package['contents']),
+        ];
+        return 'rule_hook' . md5( wp_json_encode( $payload ) );
+    }
+
 }
