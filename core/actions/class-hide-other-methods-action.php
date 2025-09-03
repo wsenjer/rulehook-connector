@@ -23,7 +23,7 @@ class Hide_Other_Methods_Action extends Abstract_Action
         $new_rates = Helper::filter_table_rates($rates);
 
         if (count($new_rates) > 0) {
-           return $new_rates;
+            return $new_rates;
         }
 
         return $rates;

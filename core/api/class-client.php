@@ -54,7 +54,7 @@ class Client
         $args = [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->accessToken,
-                'X-Session-ID'     => $this->getOrCreateSessionId(),
+                'X-Session-ID' => $this->getOrCreateSessionId(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
@@ -118,8 +118,9 @@ class Client
 
     }
 
-    private function getOrCreateSessionId() {
-        if (!isset($_SESSION)) {
+    private function getOrCreateSessionId()
+    {
+        if (! isset($_SESSION)) {
             session_start();
         }
 

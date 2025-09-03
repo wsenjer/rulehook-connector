@@ -35,7 +35,7 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
 
     private function getConnectionUrl(): string
     {
-        return Constants::RULE_HOOK_URL . '/connect?site_url=' . urlencode(home_url()) . '&site_name=' . urlencode(get_bloginfo('name')) . '&source=woocommerce';
+        return Constants::RULE_HOOK_URL.'/connect?site_url='.urlencode(home_url()).'&site_name='.urlencode(get_bloginfo('name')).'&source=woocommerce';
     }
 
     public function action()

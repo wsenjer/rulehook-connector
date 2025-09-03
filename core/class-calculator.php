@@ -23,9 +23,9 @@ class Calculator
      */
     public function calculate(array $package): array
     {
-        $package_hash = $this->get_package_hash( $package );
+        $package_hash = $this->get_package_hash($package);
 
-        if ( isset(self::$in_process[$package_hash]) ) {
+        if (isset(self::$in_process[$package_hash])) {
             return self::$in_process[$package_hash]; // already computed this request
         }
 
@@ -63,7 +63,7 @@ class Calculator
                         sprintf(
                             '%s%s',
                             sanitize_text_field($rate['label']),
-                            !empty($rate['eta']) ? ' (' . $rate['eta'] . ')' : ''
+                            ! empty($rate['eta']) ? ' ('.$rate['eta'].')' : ''
                         )
                     )
                     ->setCost(floatval($rate['cost']))
@@ -143,10 +143,11 @@ class Calculator
 
     }
 
-    protected function get_package_hash( $package ) {
+    protected function get_package_hash($package)
+    {
         $payload = [
             'dest' => $package['destination'],
-            'items' => array_map(function($i){
+            'items' => array_map(function ($i) {
                 return [
                     'id' => $i['product_id'],
                     'qty' => $i['quantity'],
@@ -156,7 +157,7 @@ class Calculator
                 ];
             }, $package['contents']),
         ];
-        return 'rule_hook' . md5( wp_json_encode( $payload ) );
-    }
 
+        return 'rule_hook'.md5(wp_json_encode($payload));
+    }
 }
