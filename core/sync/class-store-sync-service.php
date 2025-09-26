@@ -114,7 +114,7 @@ class Store_Sync_Service
                 'price' => intval($product->get_price()) * 100, // Convert to cents
                 'weight' => (int) wc_get_weight((float) $product->get_weight(), 'g'), // Convert to grams
                 'length' => (int) wc_get_dimension((float) $product->get_length(), 'mm'), // Convert to mm
-                'width' => (int) wc_get_dimension((float)$product->get_width(), 'mm'), // Convert to mm
+                'width' => (int) wc_get_dimension((float) $product->get_width(), 'mm'), // Convert to mm
                 'height' => (int) wc_get_dimension((float) $product->get_height(), 'mm'), // Convert to mm
                 'tags' => $tags,
                 'shipping_class' => $shipping_class,

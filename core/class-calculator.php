@@ -29,7 +29,6 @@ class Calculator
             return self::$in_process[$package_hash]; // already computed this request
         }
 
-
         $api_key = get_option(Constants::API_KEY_KEY);
 
         if (! $api_key) {
@@ -134,6 +133,7 @@ class Calculator
             $ruleAction = Actions_Factory::make($action['type'], $action['payload']);
             if (! $ruleAction) {
                 error_log("Unknown action type: {$action['type']}");
+
                 continue; // Skip unknown actions
             }
 
