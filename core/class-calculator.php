@@ -29,7 +29,6 @@ class Calculator
             return self::$in_process[$package_hash]; // already computed this request
         }
 
-        self::$in_process[$package_hash] = true;
 
         $api_key = get_option(Constants::API_KEY_KEY);
 
