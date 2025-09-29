@@ -73,7 +73,7 @@ class Client
 
         if (is_wp_error($response)) {
             throw new Exception(
-                'API request failed: '.$response->get_error_message(),
+                esc_html('API request failed: '. $response->get_error_message()),
                 500
             );
         }
@@ -88,10 +88,10 @@ class Client
                 : 'API error: HTTP '.$statusCode;
 
             throw new Exception(
-                $errorMessage,
-                $statusCode,
+                esc_html($errorMessage),
+                esc_html($statusCode),
                 null,
-                $decodedBody
+                esc_html($decodedBody)
             );
         }
 
@@ -128,6 +128,6 @@ class Client
             $_SESSION['rulehook_session_id'] = wp_generate_uuid4();
         }
 
-        return $_SESSION['rulehook_session_id'];
+        return sanitize_key($_SESSION['rulehook_session_id']);
     }
 }

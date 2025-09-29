@@ -15,6 +15,7 @@ woocommerce-rulehook-connector.zip export-ignore
 /core/app/frontend/app/README.MD export-ignore
 /core/app/frontend/app/vue.config.js export-ignore
 /core/app/frontend/app/.gitignore export-ignore
-
-
+/core/app/frontend/app/.editorconfig export-ignore
+.DS_Store export-ignore
+languages/.gitkeep export-ignore
 

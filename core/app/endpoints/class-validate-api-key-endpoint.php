@@ -12,7 +12,7 @@ class Validate_Api_Key_Endpoint extends Abstract_Endpoint
     {
 
         if (empty($data['apiKey'])) {
-            $payload['message'] = __('API key is required.', 'rulehook');
+            $payload['message'] = __('API key is required.', 'rulehook-connector');
 
             return $payload;
         }

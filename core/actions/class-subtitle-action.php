@@ -24,6 +24,6 @@ class Subtitle_Action extends Abstract_Action
 
         $subtitle = $this->payload['subtitle'];
 
-        echo "<br><small style='color: #9f9f9f;'>$subtitle</small>";
+        echo esc_html("<br><small style='color: #9f9f9f;'>$subtitle</small>");
     }
 }

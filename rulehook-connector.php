@@ -7,15 +7,15 @@
  * Plugin Name:       RuleHook Connector
  * Plugin URI:        https://rulehook.com
  * Description:       The easiest way to add table rates shipping to your WooCommerce store.
- * Version:           2.0.6
- * Requires PHP:      7.1
+ * Version:           1.0.0
+ * Requires PHP:      7.4
  * Requires at least: 4.0
  * Tested up to:      6.8
  * Author:            WPRuby
  * Author URI:        https://wpruby.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       rulehook
+ * Text Domain:       rulehook-connector
  * Domain Path:       /languages
  */
 
