@@ -41,8 +41,7 @@ If WooCommerce shipping zones frustrate you, RuleHook Connector unlocks the flex
 
 1. Upload the `rulehook-connector` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the *Plugins* menu in WordPress.
-3. Go to **WooCommerce → Settings → Shipping**.
-4. Add **RuleHook Connector** to your shipping zones.
+3. Go to **WooCommerce → Settings → Shipping → RuleHook**.
 5. Connect your store to [RuleHook](https://rulehook.com) and start creating rules.
 
 == Frequently Asked Questions ==
@@ -62,8 +61,7 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 == Screenshots ==
 
 1. RuleHook dashboard with rule editor.
-2. WooCommerce shipping zone showing RuleHook Connector.
-3. Example of dynamic shipping rates at checkout.
+2. Example of dynamic shipping rates at checkout.
 
 == Changelog ==
 

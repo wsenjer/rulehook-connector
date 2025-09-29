@@ -120,6 +120,12 @@ class Calculator
                 'city' => $package['destination']['city'],
                 'postcode' => $package['destination']['postcode'],
             ],
+            'origin' => [
+                'country' => WC()->countries->get_base_country(),
+                'state' => WC()->countries->get_base_state(),
+                'city' => WC()->countries->get_base_city(),
+                'postcode' => WC()->countries->get_base_postcode(),
+            ],
             'cart_total' => WC()->cart->get_cart_contents_total(),
             'user_role' => wp_get_current_user()->roles[0] ?? 'guest',
             'coupons' => WC()->cart->get_applied_coupons(),
