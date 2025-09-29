@@ -42,8 +42,6 @@ class Store_Sync_Service
             return false;
 
         } catch (Exception $e) {
-            error_log('RuleHook API Error: '.$e->getMessage());
-
             return false;
         }
     }

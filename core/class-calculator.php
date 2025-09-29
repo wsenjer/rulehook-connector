@@ -82,8 +82,6 @@ class Calculator
             return $woocommerceRates;
 
         } catch (Exception $e) {
-            error_log('rulehook.com API  Error: '.$e->getMessage());
-
             return [];
         }
 
@@ -138,8 +136,6 @@ class Calculator
         foreach ($actions as $action) {
             $ruleAction = Actions_Factory::make($action['type'], $action['payload']);
             if (! $ruleAction) {
-                error_log("Unknown action type: {$action['type']}");
-
                 continue; // Skip unknown actions
             }
 

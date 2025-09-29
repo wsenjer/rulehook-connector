@@ -54,12 +54,7 @@ class Core
         $store_sync = Store_Sync_Service::get_instance();
         $result = $store_sync->sync();
 
-        // Log the result
-        if ($result) {
-            error_log('RuleHook sync completed successfully');
-        } else {
-            error_log('RuleHook sync failed');
-        }
+
     }
 
     public function add_shipping_method($methods)
