@@ -7,7 +7,6 @@ composer.lock export-ignore
 phpunit.xml.dist export-ignore
 /bin export-ignore
 /tests export-ignore
-woocommerce-rulehook-connector.zip export-ignore
 rulehook.zip export-ignore
 /core/app/frontend/app/node_modules export-ignore
 /core/app/frontend/app/public export-ignore

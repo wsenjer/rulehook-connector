@@ -39,7 +39,7 @@ If WooCommerce shipping zones frustrate you, RuleHook Connector unlocks the flex
 
 == Installation ==
 
-1. Upload the `rulehook-connector` folder to the `/wp-content/plugins/` directory.
+1. Upload the `rulehook` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the *Plugins* menu in WordPress.
 3. Go to **WooCommerce → Settings → Shipping**.
 4. Add **RuleHook Connector** to your shipping zones.
