@@ -30,6 +30,8 @@ class App_Page
     public function enqueue_admin_scripts($hook)
     {
         // Sanitize inputs
+        // We're only checking URL parameters to determine if we're on the correct admin page, not processing form submissions
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
         $tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : '';
         $section = isset($_GET['section']) ? sanitize_text_field(wp_unslash($_GET['section'])) : '';
