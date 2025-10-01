@@ -4,7 +4,7 @@
  * The plugin bootstrap file
  *
  * @wordpress-plugin
- * Plugin Name:       RuleHook Connector
+ * Plugin Name:       RuleHook
  * Plugin URI:        https://rulehook.com
  * Description:       The easiest way to add table rates shipping to your WooCommerce store.
  * Version:           1.0.0

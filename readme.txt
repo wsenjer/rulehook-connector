@@ -1,4 +1,4 @@
-=== RuleHook Connector ===
+=== RuleHook ===
 Contributors: waseem_senjer, wprubyplugins
 Donate link: https://rulehook.com
 Tags: woocommerce, shipping, shipping zones, shipping rates, conditional shipping
