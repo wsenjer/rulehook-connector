@@ -29,15 +29,21 @@ class App_Page
 
     public function enqueue_admin_scripts($hook)
     {
-        if (! isset($_GET['page']) || $_GET['page'] !== 'wc-settings') {
+        // Sanitize inputs
+        $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
+        $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
+        $section = isset($_GET['section']) ? sanitize_text_field($_GET['section']) : '';
+
+        if ($page !== 'wc-settings') {
             return;
         }
-        if (! isset($_GET['tab']) || $_GET['tab'] !== 'shipping') {
+        if ($tab !== 'shipping') {
             return;
         }
-        if (! (isset($_GET['section']) && $_GET['section'] === 'rulehook')) {
+        if ($section !== 'rulehook') {
             return;
         }
+
 
         wp_enqueue_script('rulehook-app', plugin_dir_url(__FILE__).'app/dist/index.js', [], Constants::UTIL_CURRENT_VERSION.microtime(), true);
 
