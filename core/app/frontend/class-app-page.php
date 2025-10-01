@@ -30,9 +30,9 @@ class App_Page
     public function enqueue_admin_scripts($hook)
     {
         // Sanitize inputs
-        $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
-        $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
-        $section = isset($_GET['section']) ? sanitize_text_field($_GET['section']) : '';
+        $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        $tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : '';
+        $section = isset($_GET['section']) ? sanitize_text_field(wp_unslash($_GET['section'])) : '';
 
         if ($page !== 'wc-settings') {
             return;
