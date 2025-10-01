@@ -1,5 +1,5 @@
 .idea
-rulehook-connector.zip
+rulehook.zip
 vendor
 .phpunit.result.cache
 .phpcs.xml.dist
