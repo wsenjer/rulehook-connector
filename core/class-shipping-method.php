@@ -2,9 +2,9 @@
 
 namespace RuleHook\Core;
 
-if (! defined('ABSPATH')) {
-    exit;
-}
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 
 class Shipping_Method extends \WC_Shipping_Method
 {

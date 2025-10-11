@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\Actions\Actions_Factory;
 use RuleHook\Core\Api\Client;
 use RuleHook\Core\Api\Evaluator;

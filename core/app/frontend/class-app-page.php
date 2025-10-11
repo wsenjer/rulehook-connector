@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\App\Frontend;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\App\Endpoints\Endpoints_Factory;
 use RuleHook\Core\Constants;
 

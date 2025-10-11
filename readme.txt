@@ -1,15 +1,15 @@
-=== RuleHook ===
+=== RuleHook Connector for WooCommerce ===
 Contributors: waseem_senjer, wprubyplugins
 Donate link: https://rulehook.com
-Tags: woocommerce, shipping, shipping zones, shipping rates, conditional shipping
-Requires at least: 4.0
+Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
+Requires at least: 5.0
 Tested up to: 6.8
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Powerful rule-based shipping for WooCommerce. Set flexible rates by weight, cart value, location, products, and more.
+Connect your WooCommerce store to RuleHook — a powerful rules engine for dynamic shipping rates.
 
 == Description ==
 

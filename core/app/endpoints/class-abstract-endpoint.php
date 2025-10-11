@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 abstract class Abstract_Endpoint
 {
     public function __construct()

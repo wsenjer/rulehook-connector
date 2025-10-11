@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Save_Shipping_Settings_Endpoint extends Abstract_Endpoint
 {
     public function callback($data)

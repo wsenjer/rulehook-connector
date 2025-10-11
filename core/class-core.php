@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\App\Endpoints\Endpoints_Factory;
 use RuleHook\Core\App\Frontend\App_Page;
 use RuleHook\Core\Sync\Store_Sync_Service;

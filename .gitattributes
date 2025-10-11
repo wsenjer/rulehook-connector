@@ -18,4 +18,4 @@ rulehook.zip export-ignore
 /core/app/frontend/app/.editorconfig export-ignore
 .DS_Store export-ignore
 languages/.gitkeep export-ignore
-
+/core/app/frontend/app/.vscode export-ignore

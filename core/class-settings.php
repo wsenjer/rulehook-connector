@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Settings
 {
     private $title = '';

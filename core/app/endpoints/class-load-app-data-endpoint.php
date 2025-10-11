@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\Constants;
 
 class Load_App_Data_Endpoint extends Abstract_Endpoint

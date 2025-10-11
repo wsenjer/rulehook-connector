@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\Actions;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 abstract class Abstract_Action
 {
     public $rule_id = -1;

@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\Api;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 /**
  * RuleHook API Client
  *

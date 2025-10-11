@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\Sync;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\Api\Client;
 use RuleHook\Core\Api\Exception;
 use RuleHook\Core\Api\Sync;

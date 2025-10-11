@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\Actions;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Actions_Factory
 {
     public static function make(string $action, array $payload): ?Abstract_Action

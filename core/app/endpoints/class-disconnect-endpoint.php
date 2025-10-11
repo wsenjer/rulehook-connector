@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\App\Endpoints;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\Constants;
 
 class Disconnect_Endpoint extends Abstract_Endpoint

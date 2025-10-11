@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Helper
 {
     public static function filter_table_rates($rates): array

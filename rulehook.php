@@ -21,11 +21,12 @@
 
 namespace RuleHook;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 use RuleHook\Core\Core;
 
-if (! defined('WPINC')) {
-    exit;
-}
+
 
 class RuleHook_Connector
 {

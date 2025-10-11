@@ -2,6 +2,9 @@
 
 namespace RuleHook\Core\Actions;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Rename_Method_Action extends Abstract_Action
 {
     public function execute()

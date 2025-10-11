@@ -4,6 +4,9 @@ namespace RuleHook\Core\Actions;
 
 use RuleHook\Core\Helper;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+
 class Hide_Other_Methods_Action extends Abstract_Action
 {
     public function execute()
