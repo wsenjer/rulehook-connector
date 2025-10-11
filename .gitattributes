@@ -19,3 +19,6 @@ rulehook.zip export-ignore
 .DS_Store export-ignore
 languages/.gitkeep export-ignore
 /core/app/frontend/app/.vscode export-ignore
+/core/app/frontend/app/eslint.config.js export-ignore
+/core/app/frontend/app/vite.config.js export-ignore
+.DS_Store export-ignore
