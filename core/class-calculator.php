@@ -114,7 +114,7 @@ class Calculator
         }
 
         return [
-            'store_domain' => parse_url(home_url(), PHP_URL_HOST),
+            'store_domain' => wp_parse_url(home_url(), PHP_URL_HOST),
             'destination' => [
                 'country' => $package['destination']['country'],
                 'state' => $package['destination']['state'],

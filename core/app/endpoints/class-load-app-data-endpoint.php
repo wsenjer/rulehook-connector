@@ -24,7 +24,7 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
         return [
             'teamId' => get_option(Constants::TEAM_ID_KEY),
             'isConnected' => ! empty(get_option(Constants::API_KEY_KEY)),
-            'storeId' => parse_url(home_url(), PHP_URL_HOST),
+            'storeId' => wp_parse_url(home_url(), PHP_URL_HOST),
             'lastSyncTime' => $lastSyncedTime.' ago',
             'productsSynced' => $productsSynced !== false ? $productsSynced : 0,
             'shippingClassesSynced' => $shippingClassesSynced !== false ? $shippingClassesSynced : 0,
