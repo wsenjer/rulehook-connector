@@ -31,4 +31,11 @@ class Save_Shipping_Settings_Endpoint extends Abstract_Endpoint
     {
         return 'rulehook_save_shipping_settings';
     }
+
+    public function get_required_fields()
+    {
+        return [
+            'shippingMethodEnabled',
+        ];
+    }
 }

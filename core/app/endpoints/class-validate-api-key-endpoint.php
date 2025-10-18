@@ -51,4 +51,10 @@ class Validate_Api_Key_Endpoint extends Abstract_Endpoint
     {
         return 'rulehook_validate_api_key';
     }
+
+    protected function get_required_fields()
+    {
+        return ['apiKey'];
+    }
+
 }
