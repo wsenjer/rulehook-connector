@@ -13,3 +13,6 @@
 button {
   @apply cursor-pointer;
 }
+.woocommerce-save-button {
+  display: none;
+}

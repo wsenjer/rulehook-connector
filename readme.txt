@@ -37,6 +37,19 @@ If WooCommerce shipping zones frustrate you, RuleHook Connector unlocks the flex
 
 👉 Learn more and create your first rules at [RuleHook.com](https://rulehook.com).
 
+== Source Code ==
+
+The source code for this plugin, including unminified JavaScript and CSS files, is publicly available on GitHub:
+
+https://github.com/wsenjer/rulehook-connector/
+
+This plugin uses build tools (npm + Vite) to compile and minify JavaScript/CSS assets before release.
+To rebuild the assets from source, clone the repository and run:
+
+npm install
+npm run build
+
+
 == Installation ==
 
 1. Upload the `rulehook` folder to the `/wp-content/plugins/` directory.
