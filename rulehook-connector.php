@@ -15,7 +15,7 @@
  * Author URI:        https://wpruby.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       rulehook
+ * Text Domain:       rulehook-connector
  * Domain Path:       /languages
  */
 
