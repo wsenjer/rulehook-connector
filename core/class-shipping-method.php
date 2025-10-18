@@ -11,10 +11,10 @@ class Shipping_Method extends \WC_Shipping_Method
     public function __construct()
     {
         $this->id = 'rulehook';
-        $this->method_title = __('RuleHook', 'rulehook');
-        $this->method_description = __('Dynamic shipping rates based on rules from rulehook.com', 'rulehook');
+        $this->method_title = __('RuleHook', 'rulehook-connector');
+        $this->method_description = __('Dynamic shipping rates based on rules from rulehook.com', 'rulehook-connector');
         $this->enabled = $this->get_option('enabled', 'yes');
-        $this->title = $this->get_option('title', __('Shipping', 'rulehook'));
+        $this->title = $this->get_option('title', __('Shipping', 'rulehook-connector'));
 
         $this->init();
     }
@@ -32,16 +32,16 @@ class Shipping_Method extends \WC_Shipping_Method
     {
         $this->form_fields = [
             'enabled' => [
-                'title' => __('Enable', 'rulehook'),
+                'title' => __('Enable', 'rulehook-connector'),
                 'type' => 'checkbox',
-                'label' => __('Enable this shipping method', 'rulehook'),
+                'label' => __('Enable this shipping method', 'rulehook-connector'),
                 'default' => 'yes',
             ],
             'title' => [
-                'title' => __('Method Title', 'rulehook'),
+                'title' => __('Method Title', 'rulehook-connector'),
                 'type' => 'text',
-                'description' => __('This controls the title seen by customers at checkout.', 'rulehook'),
-                'default' => __('Shipping', 'rulehook'),
+                'description' => __('This controls the title seen by customers at checkout.', 'rulehook-connector'),
+                'default' => __('Shipping', 'rulehook-connector'),
                 'desc_tip' => true,
             ],
         ];
