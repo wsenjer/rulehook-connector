@@ -48,7 +48,7 @@ abstract class Abstract_Endpoint
 
         $response = $this->callback($data);
 
-        echo json_encode($response);
+        wp_send_json($response);
         exit;
     }
 
@@ -58,7 +58,7 @@ abstract class Abstract_Endpoint
      */
     protected function abort($error)
     {
-        echo json_encode(['error' => $error]);
+        wp_send_json_error(['error' => $error]);
         exit;
     }
 
@@ -67,7 +67,7 @@ abstract class Abstract_Endpoint
      */
     protected function output($response)
     {
-        echo json_encode($response);
+        wp_send_json($response);
         exit;
     }
 
