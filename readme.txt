@@ -1,5 +1,5 @@
 === RuleHook Connector ===
-Contributors: waseem_senjer, wprubyplugins
+Contributors: waseem_senjer, wprubyplugins, rulehook
 Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
