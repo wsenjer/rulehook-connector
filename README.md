@@ -101,12 +101,6 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 
 ---
 
-## 🖼️ Screenshots
-
-1. RuleHook dashboard with rule editor.
-2. Example of dynamic shipping rates at checkout.
-
----
 
 ## 🧾 Changelog
 
