@@ -1,4 +1,4 @@
-=== RuleHook Connector ===
+=== RuleHook: Advanced Shipping Rules for WooCommerce ===
 Contributors: waseem_senjer, wprubyplugins, rulehook
 Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
