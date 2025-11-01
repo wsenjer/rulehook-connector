@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Constants
 {
-    const UTIL_CURRENT_VERSION = '1.0.0';
+    const UTIL_CURRENT_VERSION = '1.0.1';
 
     const API_URL = 'https://rulehook.com/api';
 
