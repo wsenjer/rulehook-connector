@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Rate
 {
     private string $id = '';
+    private string $code = '';
 
     private float $cost = -1.0;
 
@@ -25,7 +26,7 @@ class Rate
     public function getWoocommerceRate(): array
     {
         return [
-            'id' => $this->getId(),
+            'id' => $this->getCode(),
             'label' => $this->getLabel(),
             'cost' => $this->getCost(),
             'meta_data' => $this->metaData,
@@ -79,4 +80,17 @@ class Rate
 
         return $this;
     }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): Rate
+    {
+        $this->code = 'rulehook:' . $code;
+        return $this;
+    }
+
+
 }

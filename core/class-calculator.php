@@ -60,6 +60,7 @@ class Calculator
 
                 $woocommerceRates[] = (new Rate)
                     ->setId('rulehook:'.sanitize_title($rate['id']))
+                    ->setCode($rate['code'])
                     ->setLabel(
                         sprintf(
                             '%s%s',
