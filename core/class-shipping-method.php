@@ -3,11 +3,14 @@
 namespace RuleHook\Core;
 
 
+
+
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 
 class Shipping_Method extends \WC_Shipping_Method
 {
+
     public function __construct()
     {
         $this->id = 'rulehook';
@@ -26,6 +29,9 @@ class Shipping_Method extends \WC_Shipping_Method
 
         // Save settings
         add_action('woocommerce_update_options_shipping_'.$this->id, [$this, 'process_admin_options']);
+
+        add_filter('woocommerce_package_rates', [$this, 'maybe_override_shipping_rates'], 100, 2);
+
     }
 
     public function init_form_fields()
@@ -51,6 +57,7 @@ class Shipping_Method extends \WC_Shipping_Method
     {
         $calculator = new Calculator($this->title);
         $rates = $calculator->calculate($package);
+
         foreach ($rates as $rate) {
             $this->add_rate($rate->getWoocommerceRate());
         }
@@ -60,4 +67,23 @@ class Shipping_Method extends \WC_Shipping_Method
     {
         require_once dirname(__FILE__).'/app/frontend/views/app.php';
     }
+
+
+    /**
+     * Apply RuleHook transformations to existing WooCommerce shipping rates.
+     *
+     * @param array $rates   The list of WooCommerce shipping rates
+     * @param array $package The shipping package
+     * @return array Modified rates
+     */
+    public function maybe_override_shipping_rates( $rates, $package = [] ) {
+
+        // implement this
+
+        return $rates;
+    }
+
+
+
+
 }
