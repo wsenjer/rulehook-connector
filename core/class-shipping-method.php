@@ -3,6 +3,8 @@
 namespace RuleHook\Core;
 
 
+
+
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 
@@ -68,47 +70,19 @@ class Shipping_Method extends \WC_Shipping_Method
 
 
     /**
-     * Filter shipping rates to override other methods with matching codes
+     * Apply RuleHook transformations to existing WooCommerce shipping rates.
      *
-     * @param array $rates Array of shipping rates
+     * @param array $rates   The list of WooCommerce shipping rates
      * @param array $package The shipping package
-     * @return array Modified array of shipping rates
+     * @return array Modified rates
      */
-    public function maybe_override_shipping_rates($rates, $package = [])
-    {
-        if (empty($rates)) {
-            return $rates;
-        }
+    public function maybe_override_shipping_rates( $rates, $package = [] ) {
 
-        $rulehook_rates = [];
-        $other_rates = [];
-        $removed_rate_ids = [];
+        // implement this
 
-        // Separate RuleHook rates from other rates
-        foreach ($rates as $rate_id => $rate) {
-            if (str_starts_with($rate_id, 'rulehook:')) {
-                $rulehook_rates[$rate_id] = $rate;
-            } else {
-                $other_rates[$rate_id] = $rate;
-            }
-        }
-
-        // If we don't have any RuleHook rates, return all rates unchanged
-        if (empty($rulehook_rates)) {
-            return $rates;
-        }
-        // Check if any RuleHook rates should override other rates
-        foreach ($rulehook_rates as $rulehook_id => $rulehook_rate) {
-            list($before, $rate_code) = explode(':', $rulehook_rate->get_id(), 2);
-            if (!empty($other_rates[$rate_code])) {
-                unset($other_rates[$rate_code]);
-            }
-        }
-
-        // Combine the remaining rates
-        return array_merge($rulehook_rates, $other_rates);
-
+        return $rates;
     }
+
 
 
 
