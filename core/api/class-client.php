@@ -123,14 +123,21 @@ class Client
 
     private function getOrCreateSessionId()
     {
-        if (! isset($_SESSION)) {
-            session_start();
+        $user_id = get_current_user_id();
+        $transient_key = 'rulehook_session_' . ($user_id ?: $this->getVisitorFingerprint());
+
+        $session_id = get_transient($transient_key);
+
+        if (!$session_id) {
+            $session_id = wp_generate_uuid4();
+            set_transient($transient_key, $session_id, 24 * HOUR_IN_SECONDS); // 24 hours
         }
 
-        if (empty($_SESSION['rulehook_session_id'])) {
-            $_SESSION['rulehook_session_id'] = wp_generate_uuid4();
-        }
+        return sanitize_key($session_id);
+    }
 
-        return sanitize_key($_SESSION['rulehook_session_id']);
+    private function getVisitorFingerprint()
+    {
+        return md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
     }
 }

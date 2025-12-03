@@ -58,6 +58,8 @@ class Store_Sync_Service
         $payload['base_country'] = (isset($storeBaseLocation['country'])) ? $storeBaseLocation['country'] : '';
         $payload['base_state'] = (isset($storeBaseLocation['state'])) ? $storeBaseLocation['state'] : '';
         $payload['currency'] = get_woocommerce_currency();
+        $payload['weight_unit'] = get_option('woocommerce_weight_unit');
+        $payload['dimension_unit'] = get_option('woocommerce_dimension_unit');
         $payload['products'] = $this->getNormalizedProducts();
         $payload['coupons'] = $this->getCoupons();
 
