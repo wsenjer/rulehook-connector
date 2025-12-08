@@ -119,6 +119,7 @@ class Store_Sync_Service
                     $shipping_class = $shipping_class_term->name;
                 }
             }
+
             // Add simple product or variable parent
             $normalizedProducts[] = [
                 'id' => $product->get_id(),
@@ -132,6 +133,7 @@ class Store_Sync_Service
                 'categories' => $categories,
                 'shipping_class' => $shipping_class,
                 'stock_status' => $product->get_stock_status(),
+                'attributes' => $this->getAttributesForProduct($product),
             ];
 
             // Add product variations if applicable
@@ -312,5 +314,41 @@ class Store_Sync_Service
 
         return $result;
 
+    }
+
+    /**
+     * @param $product
+     * @return array
+     */
+    public function getAttributesForProduct($product): array
+    {
+        // Get product attributes
+        $term_ids = [];
+
+        foreach ($product->get_attributes() as $attribute) {
+            if (!$attribute instanceof \WC_Product_Attribute) {
+                continue;
+            }
+
+            if (!$attribute->is_taxonomy()) {
+                continue; // skip custom attributes
+            }
+
+            foreach ($attribute->get_options() as $opt) {
+                if (is_numeric($opt)) {
+                    $term_id = (int)$opt;
+                } else {
+                    $term = get_term_by('slug', $opt, $attribute->get_name());
+                    $term_id = ($term && !is_wp_error($term)) ? (int)$term->term_id : null;
+                }
+
+                if ($term_id) {
+                    $term_ids[] = $term_id;
+                }
+            }
+        }
+
+        // unique, reindexed list of term ids
+        return array_values(array_unique($term_ids));
     }
 }
