@@ -101,6 +101,15 @@ class Store_Sync_Service
                 }
             }
 
+            // Get product categories
+            $categories = [];
+            $product_categories = get_the_terms($product->get_id(), 'product_cat');
+            if (! empty($product_categories) && ! is_wp_error($product_categories)) {#
+                foreach ($product_categories as $category) {
+                    $categories[] = $category->term_id;
+                }
+            }
+
             // Get shipping class
             $shipping_class = '';
             $shipping_class_id = $product->get_shipping_class_id();
@@ -120,7 +129,9 @@ class Store_Sync_Service
                 'width' => (int) wc_get_dimension((float) $product->get_width(), 'mm'), // Convert to mm
                 'height' => (int) wc_get_dimension((float) $product->get_height(), 'mm'), // Convert to mm
                 'tags' => $tags,
+                'categories' => $categories,
                 'shipping_class' => $shipping_class,
+                'stock_status' => $product->get_stock_status(),
             ];
 
             // Add product variations if applicable
