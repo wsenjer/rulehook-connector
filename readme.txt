@@ -3,8 +3,8 @@ Contributors: waseem_senjer, wprubyplugins, rulehook
 Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.0.1
+Tested up to: 6.9
+Stable tag: 1.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -101,6 +101,12 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 2. Example of dynamic shipping rates at checkout.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added: product categories and stock status to sync payload.
+* Added: product attributes to sync payload.
+* Fixed: Refactor session handling to use transients and add weight/dimension units to payload.
+
 = 1.0.1 =
 * Update primary and secondary theme colors for rebranding
 
