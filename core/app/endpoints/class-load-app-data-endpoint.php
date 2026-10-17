@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 
 use RuleHook\Core\Constants;
+use RuleHook\Core\External_Rates;
 
 class Load_App_Data_Endpoint extends Abstract_Endpoint
 {
@@ -32,6 +33,9 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             'devMode' => (bool) get_option(Constants::DEV_MODE_KEY),
             'shippingMethodEnabled' => $shippingMethodSettings['enabled'] === 'yes',
             'connectionUrl' => $this->getConnectionUrl(),
+            'externalRatesEnabled' => External_Rates::stored_status() === 'yes',
+            'countries' => WC()->countries->get_countries(),
+            'baseCountry' => WC()->countries->get_base_country(),
         ];
 
     }
