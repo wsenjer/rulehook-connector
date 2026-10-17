@@ -4,7 +4,7 @@ Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -101,6 +101,12 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 2. Example of dynamic shipping rates at checkout.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed: shipping rate subtitles showed raw HTML (`<br><small>`) instead of formatted text.
+* Fixed: every rate with a subtitle showed the same subtitle; each rate now shows its own.
+* Fixed: subtitles disappeared when WooCommerce served cached shipping rates.
+* Removed: the connector-side "rename method" action, which never ran. Renamed labels already come from RuleHook in the rate itself.
 
 = 1.1.0 =
 * Added: product categories and stock status to sync payload.
