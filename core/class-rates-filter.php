@@ -197,18 +197,22 @@ class Rates_Filter
     /**
      * The final list, in the response's order. Returns null when the
      * response is malformed, so the caller can fail open.
+     *
+     * The whole response is validated before anything is applied, and
+     * changes go onto copies of the store's rates. So a malformed or
+     * failing response leaves the original rates exactly as they were.
      */
     private function rebuild(array $response_rates, array $sent, array $originals, array $package, ?\WC_Shipping_Method $rulehook_method, Calculator $calculator): ?array
     {
+        if (! $this->is_valid_response($response_rates)) {
+            return null;
+        }
+
         $rebuilt = [];
         $actions = [];
 
         foreach ($response_rates as $response_rate) {
-            if (! is_array($response_rate) || ! isset($response_rate['cost']) || ! is_numeric($response_rate['cost'])) {
-                return null;
-            }
-
-            $rate_actions = is_array($response_rate['actions'] ?? null) ? $response_rate['actions'] : [];
+            $rate_actions = $response_rate['actions'] ?? [];
 
             if (($response_rate['source'] ?? 'rulehook') === 'external') {
                 $id = (string) ($response_rate['external_id'] ?? '');
@@ -217,12 +221,8 @@ class Rates_Filter
                     continue;
                 }
 
-                $rebuilt[$id] = $this->apply_changes($originals[$id], $response_rate, $sent[$id], $rate_actions, $calculator);
+                $rebuilt[$id] = $this->apply_changes(clone $originals[$id], $response_rate, $sent[$id], $rate_actions, $calculator);
             } else {
-                if (! isset($response_rate['id'], $response_rate['label'])) {
-                    return null;
-                }
-
                 if ($rulehook_method === null) {
                     continue;
                 }
@@ -237,9 +237,7 @@ class Rates_Filter
             }
 
             foreach ($rate_actions as $action) {
-                if (is_array($action) && isset($action['type'])) {
-                    $actions[md5(wp_json_encode($action))] = $action;
-                }
+                $actions[md5(wp_json_encode($action))] = $action;
             }
         }
 
@@ -247,6 +245,47 @@ class Rates_Filter
         $calculator->handleActions(array_values($actions), true);
 
         return $rebuilt;
+    }
+
+    /**
+     * Every rate must have a numeric cost and well-formed actions; RuleHook
+     * rates also need an id and a label, and external rates a string label
+     * if they send one.
+     */
+    private function is_valid_response(array $response_rates): bool
+    {
+        foreach ($response_rates as $response_rate) {
+            if (! is_array($response_rate) || ! isset($response_rate['cost']) || ! is_numeric($response_rate['cost'])) {
+                return false;
+            }
+
+            $actions = $response_rate['actions'] ?? [];
+
+            if (! is_array($actions)) {
+                return false;
+            }
+
+            foreach ($actions as $action) {
+                if (! is_array($action) || ! isset($action['type']) || ! is_string($action['type'])
+                    || (isset($action['payload']) && ! is_array($action['payload']))) {
+                    return false;
+                }
+            }
+
+            if (isset($response_rate['label']) && ! is_scalar($response_rate['label'])) {
+                return false;
+            }
+
+            if (($response_rate['source'] ?? 'rulehook') === 'external') {
+                if (isset($response_rate['external_id']) && ! is_scalar($response_rate['external_id'])) {
+                    return false;
+                }
+            } elseif (! isset($response_rate['id'], $response_rate['label']) || ! is_scalar($response_rate['id'])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -342,14 +381,20 @@ class Rates_Filter
             return $rates;
         }
 
+        foreach ($response_rates as $response_rate) {
+            if (! is_array($response_rate) || ($response_rate['source'] ?? 'rulehook') === 'external') {
+                return $rates;
+            }
+        }
+
+        if (! $this->is_valid_response($response_rates)) {
+            return $rates;
+        }
+
         $hide_others = false;
 
         foreach ($response_rates as $response_rate) {
-            if (! is_array($response_rate) || ! isset($response_rate['id'], $response_rate['label'], $response_rate['cost'])) {
-                return $rates;
-            }
-
-            $actions = is_array($response_rate['actions'] ?? null) ? $response_rate['actions'] : [];
+            $actions = $response_rate['actions'] ?? [];
 
             foreach ($actions as $action) {
                 if (($action['type'] ?? '') === 'hide_other_methods') {
