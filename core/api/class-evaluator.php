@@ -37,11 +37,22 @@ class Evaluator
      */
     public function evaluateRates(array $cartData): array
     {
+        return $this->evaluate($cartData)['rates'];
+    }
+
+    /**
+     * Evaluate cart data and return the whole response, including
+     * `external_rates_enabled`.
+     *
+     * @throws Exception When the API request fails or the response has no rates
+     */
+    public function evaluate(array $cartData): array
+    {
         $response = $this->client->request('POST', 'v1/evaluate', $cartData);
-        if (! isset($response['rates']) || ! is_array($response['rates'])) {
+        if (! is_array($response) || ! isset($response['rates']) || ! is_array($response['rates'])) {
             throw new Exception('Invalid response: missing rates data');
         }
 
-        return $response['rates'];
+        return $response;
     }
 }

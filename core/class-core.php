@@ -42,6 +42,9 @@ class Core
         add_filter('woocommerce_shipping_methods', [$this, 'add_shipping_method']);
         add_action('woocommerce_shipping_init', [$this, 'init_shipping_method']);
 
+        // Protocol 2: runs only once the store has opted in to external rates.
+        Rates_Filter::register();
+
         // Rates are cached in the WC session, so the subtitle renderer must not depend on the API call running this request.
         add_action('woocommerce_after_shipping_rate', [Subtitle_Action::class, 'render_subtitle']);
 
