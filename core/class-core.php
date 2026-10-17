@@ -5,6 +5,7 @@ namespace RuleHook\Core;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 
+use RuleHook\Core\Actions\Subtitle_Action;
 use RuleHook\Core\App\Endpoints\Endpoints_Factory;
 use RuleHook\Core\App\Frontend\App_Page;
 use RuleHook\Core\Sync\Store_Sync_Service;
@@ -40,6 +41,9 @@ class Core
     {
         add_filter('woocommerce_shipping_methods', [$this, 'add_shipping_method']);
         add_action('woocommerce_shipping_init', [$this, 'init_shipping_method']);
+
+        // Rates are cached in the WC session, so the subtitle renderer must not depend on the API call running this request.
+        add_action('woocommerce_after_shipping_rate', [Subtitle_Action::class, 'render_subtitle']);
 
         // Add cron hook for syncing
         add_action('rulehook_sync_event', [$this, 'sync_store_data']);

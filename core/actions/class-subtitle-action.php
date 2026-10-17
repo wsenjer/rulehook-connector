@@ -7,26 +7,24 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Subtitle_Action extends Abstract_Action
 {
+    const META_KEY = '_rulehook_subtitle';
+
+    /**
+     * The subtitle is stored in each rate's own meta by the Calculator and
+     * rendered by render_subtitle(), which Core registers once.
+     */
     public function execute()
     {
-        add_action('woocommerce_after_shipping_rate', [$this, 'add_subtitle']);
     }
 
-    public function add_subtitle($method)
+    public static function render_subtitle($method)
     {
-
         $meta_data = $method->get_meta_data();
 
-        if (! isset($meta_data['actions'])) {
+        if (empty($meta_data[self::META_KEY])) {
             return;
         }
 
-        if (! in_array('set_subtitle', $meta_data['actions'])) {
-            return;
-        }
-
-        $subtitle = $this->payload['subtitle'];
-
-        echo esc_html("<br><small style='color: #9f9f9f;'>$subtitle</small>");
+        echo '<br><small style="color: #9f9f9f;">'.esc_html($meta_data[self::META_KEY]).'</small>';
     }
 }

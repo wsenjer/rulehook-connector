@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 
 use RuleHook\Core\Actions\Actions_Factory;
+use RuleHook\Core\Actions\Subtitle_Action;
 use RuleHook\Core\Api\Client;
 use RuleHook\Core\Api\Evaluator;
 use RuleHook\Core\Api\Exception;
@@ -75,6 +76,7 @@ class Calculator
                             }, $rate['actions'] ?? []),
                             'ETA' => $rate['eta'] ?? '',
                             'Notes' => $rate['description'] ?? '',
+                            Subtitle_Action::META_KEY => $this->get_subtitle($rate['actions'] ?? []),
                         ]
                     );
 
@@ -145,6 +147,18 @@ class Calculator
             $ruleAction->execute();
         }
 
+    }
+
+    private function get_subtitle(array $actions): string
+    {
+        $subtitle = '';
+        foreach ($actions as $action) {
+            if (($action['type'] ?? '') === 'set_subtitle') {
+                $subtitle = sanitize_text_field($action['payload']['subtitle'] ?? '');
+            }
+        }
+
+        return $subtitle;
     }
 
     protected function get_package_hash($package)
