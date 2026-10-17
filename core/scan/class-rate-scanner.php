@@ -196,10 +196,19 @@ class Rate_Scanner
             $country = $zone->get_id() === 0 ? $this->rest_of_world_country : WC()->countries->get_base_country();
         }
 
+        $postcode = $this->sample_postcode($postcode, $country);
+
+        // Live-rate plugins usually need a postcode. A zone that only names
+        // the store's own country is sampled at the store's own address.
+        if ($postcode === '' && $country === WC()->countries->get_base_country()) {
+            $postcode = (string) WC()->countries->get_base_postcode();
+            $state = $state ?: (string) WC()->countries->get_base_state();
+        }
+
         return [
             'country' => $country,
             'state' => $state,
-            'postcode' => $this->sample_postcode($postcode, $country),
+            'postcode' => $postcode,
             'city' => '',
             'address' => '',
             'address_1' => '',
