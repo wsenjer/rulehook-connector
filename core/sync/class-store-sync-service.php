@@ -10,6 +10,7 @@ use RuleHook\Core\Api\Exception;
 use RuleHook\Core\Api\Sync;
 use RuleHook\Core\Constants;
 use RuleHook\Core\External_Rates;
+use RuleHook\Core\Margin_Sync;
 
 class Store_Sync_Service
 {
@@ -39,6 +40,7 @@ class Store_Sync_Service
             $result = $sync->syncStoreMetadata($payload);
             if (! empty($result)) {
                 External_Rates::remember_from_response($result);
+                Margin_Sync::remember_from_response($result);
                 $this->updateSyncData($result);
 
                 return true;

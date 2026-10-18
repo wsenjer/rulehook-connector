@@ -94,7 +94,7 @@ class Client
                 esc_html($errorMessage),
                 esc_html($statusCode),
                 null,
-                esc_html($decodedBody)
+                is_array($decodedBody) ? $decodedBody : null
             );
         }
 
@@ -124,7 +124,7 @@ class Client
     private function getOrCreateSessionId()
     {
         $user_id = get_current_user_id();
-        $transient_key = 'rulehook_session_' . ($user_id ?: $this->getVisitorFingerprint());
+        $transient_key = 'rulehook_session_' . ($user_id ?: self::getVisitorFingerprint());
 
         $session_id = get_transient($transient_key);
 
@@ -136,8 +136,38 @@ class Client
         return sanitize_key($session_id);
     }
 
-    private function getVisitorFingerprint()
+    /**
+     * The X-Session-ID this shopper's /evaluate calls sent, without creating
+     * one. A guest who creates an account at checkout is signed in by the
+     * time the order is placed, so their visitor id is checked too.
+     *
+     * @return string|null null when this shopper never called /evaluate
+     */
+    public static function currentSessionId(): ?string
     {
-        return md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
+        $keys = [];
+        $user_id = get_current_user_id();
+
+        if ($user_id) {
+            $keys[] = 'rulehook_session_' . $user_id;
+        }
+
+        $keys[] = 'rulehook_session_' . self::getVisitorFingerprint();
+
+        foreach ($keys as $key) {
+            $session_id = get_transient($key);
+
+            if (is_string($session_id) && $session_id !== '') {
+                return sanitize_key($session_id);
+            }
+        }
+
+        return null;
+    }
+
+    private static function getVisitorFingerprint()
+    {
+        // Background jobs (Action Scheduler, WP-CLI) may have neither.
+        return md5(($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['REMOTE_ADDR'] ?? ''));
     }
 }

@@ -90,6 +90,7 @@ class Rates_Filter
         }
 
         External_Rates::remember_from_response($response);
+        Margin_Sync::remember_from_response($response);
 
         $hash = Calculator::get_package_hash($package);
         $rulehook_method = self::$rulehook_methods[$hash] ?? null;
