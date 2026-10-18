@@ -46,6 +46,11 @@ class Order_Outcomes
     const PLACED_META = '_rulehook_outcome_placed_at';
 
     /**
+     * The `occurred_at` of the order's latest queued event (see occurred_at()).
+     */
+    const LAST_EVENT_META = '_rulehook_outcome_last_at';
+
+    /**
      * On each shipping item: the id of the rate the shopper chose, which
      * WooCommerce doesn't keep.
      */
@@ -102,7 +107,7 @@ class Order_Outcomes
                 return;
             }
 
-            $occurred_at = self::now();
+            $occurred_at = self::occurred_at($order);
             $session_id = Client::currentSessionId();
 
             if ($session_id !== null) {
@@ -125,7 +130,13 @@ class Order_Outcomes
         }
 
         try {
-            self::queue((int) $order_id, self::STATUS_EVENTS[$to], self::now());
+            $order = $order instanceof \WC_Order ? $order : wc_get_order($order_id);
+
+            if (! $order instanceof \WC_Order) {
+                return;
+            }
+
+            self::queue($order->get_id(), self::STATUS_EVENTS[$to], self::occurred_at($order));
         } catch (\Throwable $e) {
             // A status change must never fail because of RuleHook.
         }
@@ -149,7 +160,7 @@ class Order_Outcomes
                 return;
             }
 
-            self::queue($order->get_id(), self::STATUS_EVENTS[$order->get_status()] ?? 'placed', self::now());
+            self::queue($order->get_id(), self::STATUS_EVENTS[$order->get_status()] ?? 'placed', self::occurred_at($order));
         } catch (\Throwable $e) {
             // A refund must never fail because of RuleHook.
         }
@@ -221,9 +232,21 @@ class Order_Outcomes
         }
     }
 
-    private static function now(): string
+    /**
+     * Now, or a second after the order's previous event if that's later.
+     * RuleHook replaces an event only with a later one, to the second, so a
+     * partial refund in the same second as a status change would otherwise
+     * be ignored.
+     */
+    private static function occurred_at(\WC_Order $order): string
     {
-        return gmdate('Y-m-d\TH:i:s\Z');
+        $last = strtotime((string) $order->get_meta(self::LAST_EVENT_META)) ?: 0;
+        $occurred_at = gmdate('Y-m-d\TH:i:s\Z', max(time(), $last + 1));
+
+        $order->update_meta_data(self::LAST_EVENT_META, $occurred_at);
+        $order->save_meta_data();
+
+        return $occurred_at;
     }
 
     private static function log(string $message): void
