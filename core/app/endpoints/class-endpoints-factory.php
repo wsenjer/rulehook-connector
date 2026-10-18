@@ -55,6 +55,7 @@ class Endpoints_Factory
             Toggle_Dev_Mode_Endpoint::class,
             Save_Shipping_Settings_Endpoint::class,
             Scan_Shipping_Rates_Endpoint::class,
+            Start_Order_Backfill_Endpoint::class,
         ];
     }
 }

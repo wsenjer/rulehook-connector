@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 use RuleHook\Core\Actions\Subtitle_Action;
 use RuleHook\Core\App\Endpoints\Endpoints_Factory;
 use RuleHook\Core\App\Frontend\App_Page;
+use RuleHook\Core\Outcomes\Order_Backfill;
 use RuleHook\Core\Outcomes\Order_Outcomes;
 use RuleHook\Core\Sync\Store_Sync_Service;
 
@@ -48,6 +49,7 @@ class Core
 
         // Shipping margin: order events, sent only once the store has opted in.
         Order_Outcomes::register();
+        Order_Backfill::register();
 
         // Rates are cached in the WC session, so the subtitle renderer must not depend on the API call running this request.
         add_action('woocommerce_after_shipping_rate', [Subtitle_Action::class, 'render_subtitle']);

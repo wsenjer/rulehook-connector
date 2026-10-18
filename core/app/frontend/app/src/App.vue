@@ -183,6 +183,58 @@ const scanShippingRates = () => {
     })
 }
 
+// Shipping margin: importing the last 90 days of orders
+const marginSyncEnabled = ref(false)
+const orderBackfill = ref(null)
+const isStartingBackfill = ref(false)
+const backfillTimer = ref(null)
+const backfillRunning = computed(() => orderBackfill.value?.status === 'running')
+const backfillProgress = computed(() => {
+  const state = orderBackfill.value
+  if (!state || !state.total) return 0
+  return Math.min(100, Math.round(((state.done + state.skipped) / state.total) * 100))
+})
+
+// While an import runs, refresh its progress every few seconds
+const watchBackfill = () => {
+  if (backfillRunning.value && !backfillTimer.value) {
+    backfillTimer.value = window.setInterval(loadApp, 5000)
+  }
+  if (!backfillRunning.value && backfillTimer.value) {
+    window.clearInterval(backfillTimer.value)
+    backfillTimer.value = null
+  }
+}
+
+const startOrderBackfill = () => {
+  if (!isMounted) return;
+
+  isStartingBackfill.value = true
+  api
+    .post('', { action: 'rulehook_start_order_backfill' })
+    .then((response) => {
+      if (!isMounted) return;
+
+      if (response.data.ok) {
+        orderBackfill.value = response.data.orderBackfill
+        toast.success('Importing your orders from the last 90 days.')
+        watchBackfill()
+      }
+
+      if (response.data.data && response.data.data.error) {
+        toast.error(response.data.data.error)
+      }
+    })
+    .catch(() => {
+      if (!isMounted) return;
+      toast.error('Error starting the import. Please try again later.')
+    })
+    .finally(() => {
+      if (!isMounted) return;
+      isStartingBackfill.value = false
+    })
+}
+
 const toggleDevMode = () => {
   api
     .post('', { action: 'rulehook_toggle_dev_mode' })
@@ -218,6 +270,9 @@ const loadApp = () => {
       baseUrl.value = response.data.rulehookUrl || baseUrl.value
       countries.value = response.data.countries || {}
       externalRatesEnabled.value = response.data.externalRatesEnabled
+      marginSyncEnabled.value = response.data.marginSyncEnabled
+      orderBackfill.value = response.data.orderBackfill
+      watchBackfill()
       if (!restOfWorldCountry.value) {
         restOfWorldCountry.value = response.data.baseCountry || ''
       }
@@ -265,6 +320,10 @@ onBeforeUnmount(() => {
   if (pollTimer.value) {
     window.clearInterval(pollTimer.value);
     pollTimer.value = null;
+  }
+  if (backfillTimer.value) {
+    window.clearInterval(backfillTimer.value);
+    backfillTimer.value = null;
   }
   cleanupEventListener();
 })
@@ -501,6 +560,44 @@ onBeforeUnmount(() => {
             {{ service.label || service.id }} <code class="text-xs text-gray-500">{{ service.method_id }} · {{ service.id }}</code>
           </li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Shipping Margin: import past orders -->
+    <div v-if="isConnected && !isLoading && marginSyncEnabled" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="flex items-start justify-between gap-6">
+        <div>
+          <h2 class="text-xl !my-0 font-semibold text-gray-900">Shipping Margin</h2>
+          <p class="text-gray-600 text-sm mt-1">
+            New orders are sent to RuleHook as they're placed. Import your completed, refunded and cancelled orders from the last 90 days so your first shipping margin report doesn't wait a month.
+            They don't count towards your monthly order limit.
+          </p>
+          <p class="text-gray-500 text-xs mt-1">
+            Like new orders, they're sent without customer names, emails, phone numbers or street addresses.
+          </p>
+        </div>
+        <button @click="startOrderBackfill()" :disabled="isStartingBackfill || backfillRunning" class="px-4 py-2 shrink-0 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-60">
+          <svg class="w-4 h-4" :class="{'animate-spin': isStartingBackfill || backfillRunning}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span>{{ backfillRunning ? 'Importing…' : (orderBackfill && orderBackfill.status === 'done' ? 'Import again' : 'Import the last 90 days of orders') }}</span>
+        </button>
+      </div>
+
+      <div v-if="orderBackfill" class="mt-4 text-sm text-gray-700">
+        <template v-if="backfillRunning">
+          <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden" role="progressbar" :aria-valuenow="backfillProgress" aria-valuemin="0" aria-valuemax="100">
+            <div class="h-2 bg-primary transition-all duration-500" :style="{ width: backfillProgress + '%' }"></div>
+          </div>
+          <p class="mt-2">{{ orderBackfill.done + orderBackfill.skipped }} of {{ orderBackfill.total }} orders processed.</p>
+        </template>
+        <p v-else-if="orderBackfill.status === 'done'">
+          Imported {{ orderBackfill.done }} orders<span v-if="orderBackfill.skipped">, and skipped {{ orderBackfill.skipped }} already sent</span>.
+          They appear on your Shipping P&amp;L in RuleHook within a few minutes.
+        </p>
+        <p v-else class="text-danger">
+          {{ orderBackfill.error }} {{ orderBackfill.done }} of {{ orderBackfill.total }} orders were imported before that; importing again picks up the rest.
+        </p>
       </div>
     </div>
 
