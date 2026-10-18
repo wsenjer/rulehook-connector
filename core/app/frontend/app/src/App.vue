@@ -183,7 +183,7 @@ const scanShippingRates = () => {
     })
 }
 
-// Shipping margin: importing the last 90 days of orders
+// Shipping margin: importing past orders
 const marginSyncEnabled = ref(false)
 const orderBackfill = ref(null)
 const isStartingBackfill = ref(false)
@@ -217,7 +217,7 @@ const startOrderBackfill = () => {
 
       if (response.data.ok) {
         orderBackfill.value = response.data.orderBackfill
-        toast.success('Importing your orders from the last 90 days.')
+        toast.success('Importing your orders from the last 13 months.')
         watchBackfill()
       }
 
@@ -569,8 +569,8 @@ onBeforeUnmount(() => {
         <div>
           <h2 class="text-xl !my-0 font-semibold text-gray-900">Shipping Margin</h2>
           <p class="text-gray-600 text-sm mt-1">
-            New orders are sent to RuleHook as they're placed. Import your completed, refunded and cancelled orders from the last 90 days so your first shipping margin report doesn't wait a month.
-            They don't count towards your monthly order limit.
+            New orders are sent to RuleHook as they're placed. Import your orders from the last 13 months so your first shipping margin report doesn't wait a month.
+            Open orders are sent as placed, and their later status changes follow as usual. Imported orders don't count towards your monthly order limit.
           </p>
           <p class="text-gray-500 text-xs mt-1">
             Like new orders, they're sent without customer names, emails, phone numbers or street addresses.
@@ -580,7 +580,7 @@ onBeforeUnmount(() => {
           <svg class="w-4 h-4" :class="{'animate-spin': isStartingBackfill || backfillRunning}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
-          <span>{{ backfillRunning ? 'Importing…' : (orderBackfill && orderBackfill.status === 'done' ? 'Import again' : 'Import the last 90 days of orders') }}</span>
+          <span>{{ backfillRunning ? 'Importing…' : (orderBackfill && orderBackfill.status === 'done' ? 'Import again' : 'Import past orders') }}</span>
         </button>
       </div>
 

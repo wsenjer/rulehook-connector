@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 use RuleHook\Core\Outcomes\Order_Backfill;
 
 /**
- * "Import the last 90 days of orders" on the admin page (margin spec §4.6).
+ * "Import past orders" on the admin page (margin spec §4.6).
  */
 class Start_Order_Backfill_Endpoint extends Abstract_Endpoint
 {

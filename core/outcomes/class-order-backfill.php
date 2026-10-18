@@ -11,12 +11,14 @@ use RuleHook\Core\Constants;
 use RuleHook\Core\Margin_Sync;
 
 /**
- * "Import the last 90 days of orders" (margin spec §4.6), so a store that
- * has just opted in gets a shipping margin report without waiting a month.
+ * "Import past orders" (margin spec §4.6), so a store that has just opted in
+ * gets a shipping margin report without waiting a month.
  *
- * Completed, refunded and cancelled orders from the last 90 days are sent as
+ * Orders from the last 395 days, the oldest RuleHook accepts, are sent as
  * `source: "backfill"`, which RuleHook never counts against the store's
- * monthly order limit. Orders already sent live are skipped. Each batch of
+ * monthly order limit: completed, refunded and cancelled ones with that
+ * event, and processing and on-hold ones as placed, so their later status
+ * change is sent live. Orders already sent live are skipped. Each batch of
  * up to 100 orders is its own Action Scheduler action, so a large store never
  * holds one request for long, and progress is kept in an option so the admin
  * page can show it.
@@ -25,13 +27,14 @@ class Order_Backfill
 {
     const HOOK = 'rulehook_backfill_order_outcomes';
 
-    const DAYS = 90;
+    /** RuleHook rejects events more than 400 days old. */
+    const DAYS = 395;
 
     const BATCH = 100;
 
     const STATE_KEY = 'rulehook_order_backfill';
 
-    const STATUSES = ['completed', 'refunded', 'cancelled'];
+    const STATUSES = ['completed', 'refunded', 'cancelled', 'processing', 'on-hold'];
 
     const RUNNING = 'running';
 
@@ -209,6 +212,9 @@ class Order_Backfill
                 return $completed === null ? [['refunded', $refunded]] : [['completed', $completed], ['refunded', $refunded]];
             case 'cancelled':
                 return [['cancelled', $modified]];
+            case 'processing':
+            case 'on-hold':
+                return [['placed', $created]];
             default:
                 return [];
         }

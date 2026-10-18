@@ -104,7 +104,7 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 == Changelog ==
 
 = Unreleased =
-* Added: "Import the last 90 days of orders" for Shipping Margin, on the RuleHook settings page. Completed, refunded and cancelled orders from the last 90 days are sent in the background, in batches, with the same fields as new orders and no customer names, emails, phone numbers or street addresses. Imported orders don't count towards your monthly order limit in RuleHook.
+* Added: "Import past orders" for Shipping Margin, on the RuleHook settings page. Orders from the last 13 months are sent in the background, in batches, with the same fields as new orders and no customer names, emails, phone numbers or street addresses: completed, refunded and cancelled orders as they stand, and processing and on-hold orders as placed. Imported orders don't count towards your monthly order limit in RuleHook.
 * Changed: an order placed before Shipping Margin was turned on is reported as imported rather than live when its status changes later, so it doesn't count towards your monthly order limit.
 
 = 2.1.0 =
