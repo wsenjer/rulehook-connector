@@ -4,7 +4,7 @@ Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.1
+Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -102,6 +102,15 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 
 == Changelog ==
 
+= 2.0.0 =
+* Added: rules can hide, rename and reprice rates from your other shipping plugins (for example Australia Post live rates), once you turn on rules for store rates in RuleHook's store settings. Until then the connector works exactly as before.
+* Added: with store rates on, RuleHook is called once per shipping calculation, after every shipping plugin has added its rates. Repriced rates get their taxes recalculated.
+* Added: if RuleHook is unreachable, slow (3 seconds by default, adjustable with the `rulehook_external_rates_timeout` filter) or returns an error, your store's own rates are shown unchanged.
+* Added: shipping zones and their methods are included in the store sync, so rules can target them before your first order.
+* Added: a "Scan shipping rates" button that finds the services your shipping plugins offer in each zone.
+* Added: the `RULEHOOK_API_URL` constant and `rulehook_api_url` filter, to point the connector at another RuleHook server.
+* Changed: with store rates on, "Hide other methods" runs in RuleHook and keeps the store rates the rule targets, instead of hiding every non-RuleHook rate.
+
 = 1.1.1 =
 * Fixed: shipping rate subtitles showed raw HTML (`<br><small>`) instead of formatted text.
 * Fixed: every rate with a subtitle showed the same subtitle; each rate now shows its own.
@@ -121,6 +130,9 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+Lets RuleHook rules act on rates from your other shipping plugins. Nothing changes until you turn this on in RuleHook's store settings.
 
 = 1.0.0 =
 First public release of RuleHook Connector.

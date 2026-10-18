@@ -49,6 +49,14 @@ class Shipping_Method extends \WC_Shipping_Method
 
     public function calculate_shipping($package = [])
     {
+        // With external rates on, the rates filter adds RuleHook's rates from
+        // the same API call that handles the store's own rates.
+        if (External_Rates::is_enabled()) {
+            Rates_Filter::mark_rulehook_available($package, $this);
+
+            return;
+        }
+
         $calculator = new Calculator($this->title);
         $rates = $calculator->calculate($package);
         foreach ($rates as $rate) {

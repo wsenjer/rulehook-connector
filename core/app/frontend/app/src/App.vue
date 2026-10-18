@@ -149,6 +149,40 @@ const sync = () => {
     })
 }
 
+const countries = ref({})
+const externalRatesEnabled = ref(false)
+const restOfWorldCountry = ref('')
+const isScanning = ref(false)
+const scanResult = ref(null)
+const scanShippingRates = () => {
+  if (!isMounted) return;
+
+  isScanning.value = true
+  scanResult.value = null
+  api
+    .post('', { action: 'rulehook_scan_shipping_rates', restOfWorldCountry: restOfWorldCountry.value })
+    .then((response) => {
+      if (!isMounted) return;
+
+      if (response.data.ok) {
+        scanResult.value = response.data
+        toast.success(`Found ${response.data.servicesFound} shipping services.`)
+      }
+
+      if (response.data.data && response.data.data.error) {
+        toast.error(response.data.data.error)
+      }
+    })
+    .catch(() => {
+      if (!isMounted) return;
+      toast.error('Error scanning shipping rates. Please try again later.')
+    })
+    .finally(() => {
+      if (!isMounted) return;
+      isScanning.value = false
+    })
+}
+
 const toggleDevMode = () => {
   api
     .post('', { action: 'rulehook_toggle_dev_mode' })
@@ -181,6 +215,11 @@ const loadApp = () => {
       devMode.value = response.data.devMode
       shippingMethodEnabled.value = response.data.shippingMethodEnabled
       connectionUrl.value = response.data.connectionUrl
+      countries.value = response.data.countries || {}
+      externalRatesEnabled.value = response.data.externalRatesEnabled
+      if (!restOfWorldCountry.value) {
+        restOfWorldCountry.value = response.data.baseCountry || ''
+      }
       isLoading.value = false
 
     })
@@ -423,6 +462,46 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
+    <!-- Scan Shipping Rates -->
+    <div v-if="isConnected && !isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="flex items-start justify-between gap-6">
+        <div>
+          <h2 class="text-xl !my-0 font-semibold text-gray-900">Scan Shipping Rates</h2>
+          <p class="text-gray-600 text-sm mt-1">
+            Finds the services your shipping plugins offer in each zone, using your lightest and heaviest products, so you can target them in RuleHook rules before your first order.
+            Services seen at checkout are added automatically.
+          </p>
+          <p v-if="!externalRatesEnabled" class="text-gray-500 text-xs mt-1">
+            Rules apply to these rates once you turn on rules for store rates in RuleHook's store settings.
+          </p>
+        </div>
+        <div class="flex items-end gap-3 shrink-0">
+          <label class="flex flex-col text-sm text-gray-700">
+            <span class="mb-1">Sample country for "rest of the world"</span>
+            <select v-model="restOfWorldCountry" class="rounded border-gray-300">
+              <option v-for="(name, code) in countries" :key="code" :value="code">{{ name }}</option>
+            </select>
+          </label>
+          <button @click="scanShippingRates()" :disabled="isScanning" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" :class="{'animate-spin': isScanning}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>{{ isScanning ? 'Scanning…' : 'Scan shipping rates' }}</span>
+          </button>
+        </div>
+      </div>
+      <div v-if="scanResult" class="mt-4 text-sm text-gray-700">
+        <p>
+          Scanned {{ scanResult.zones }} zones and {{ scanResult.packages }} sample packages; found {{ scanResult.servicesFound }} services.
+          <span v-if="scanResult.failedPackages > 0">{{ scanResult.failedPackages }} packages failed, usually a plugin that needs a real checkout.</span>
+        </p>
+        <ul v-if="scanResult.services.length" class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-1">
+          <li v-for="service in scanResult.services" :key="service.method_id + '|' + service.id" class="truncate">
+            {{ service.label || service.id }} <code class="text-xs text-gray-500">{{ service.method_id }} · {{ service.id }}</code>
+          </li>
+        </ul>
+      </div>
+    </div>
 
   </div>
 

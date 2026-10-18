@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 
 use RuleHook\Core\Constants;
+use RuleHook\Core\External_Rates;
 
 class Disconnect_Endpoint extends Abstract_Endpoint
 {
@@ -13,6 +14,7 @@ class Disconnect_Endpoint extends Abstract_Endpoint
     {
         delete_option(Constants::TEAM_ID_KEY);
         delete_option(Constants::API_KEY_KEY);
+        External_Rates::forget();
 
         $this->ok();
     }

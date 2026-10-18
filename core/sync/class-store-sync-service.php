@@ -9,6 +9,7 @@ use RuleHook\Core\Api\Client;
 use RuleHook\Core\Api\Exception;
 use RuleHook\Core\Api\Sync;
 use RuleHook\Core\Constants;
+use RuleHook\Core\External_Rates;
 
 class Store_Sync_Service
 {
@@ -30,13 +31,14 @@ class Store_Sync_Service
     public function sync(): bool
     {
         $api_key = get_option(Constants::API_KEY_KEY);
-        $client = new Client(Constants::API_URL, $api_key);
+        $client = new Client(Constants::api_url(), $api_key);
 
         try {
             $sync = new Sync($client);
             $payload = $this->getPayload();
             $result = $sync->syncStoreMetadata($payload);
             if (! empty($result)) {
+                External_Rates::remember_from_response($result);
                 $this->updateSyncData($result);
 
                 return true;
@@ -68,6 +70,7 @@ class Store_Sync_Service
         $payload['shipping_classes'] = $this->getShippingClasses();
         $payload['user_roles'] = $this->getUserRoles();
         $payload['product_attributes'] = $this->getProductAttributes();
+        $payload['shipping_zones'] = $this->getShippingZones();
 
         return $payload;
 
@@ -156,6 +159,90 @@ class Store_Sync_Service
         }
 
         return $normalizedProducts;
+    }
+
+    /**
+     * The store's shipping zones and the methods in each, so rules can
+     * target a method, or one zone's instance of it, before any checkout.
+     * Includes the "rest of the world" zone, and methods that don't use
+     * zones (with no instance id).
+     */
+    public function getShippingZones(): array
+    {
+        if (! class_exists('\WC_Shipping_Zones')) {
+            return [];
+        }
+
+        $zones = [];
+
+        foreach (\WC_Shipping_Zones::get_zones() as $zone_data) {
+            $zone = \WC_Shipping_Zones::get_zone((int) $zone_data['id']);
+
+            if ($zone) {
+                $zones[] = $this->normalizeZone($zone);
+            }
+        }
+
+        $zones[] = $this->normalizeZone(new \WC_Shipping_Zone(0));
+
+        $global_methods = [];
+
+        foreach (WC()->shipping()->get_shipping_methods() as $method) {
+            if ($method->id === 'rulehook' || $method->supports('shipping-zones')) {
+                continue;
+            }
+
+            $global_methods[] = [
+                'method_id' => $method->id,
+                'instance_id' => '',
+                'title' => wp_strip_all_tags((string) $method->get_method_title()),
+                'method_title' => wp_strip_all_tags((string) $method->get_method_title()),
+                'enabled' => $method->is_enabled(),
+            ];
+        }
+
+        if (! empty($global_methods)) {
+            $zones[] = [
+                'id' => 'global',
+                'name' => __('Methods outside shipping zones', 'rulehook-connector'),
+                'locations' => [],
+                'methods' => $global_methods,
+            ];
+        }
+
+        return $zones;
+    }
+
+    private function normalizeZone(\WC_Shipping_Zone $zone): array
+    {
+        $locations = [];
+
+        foreach ($zone->get_zone_locations() as $location) {
+            $locations[] = $location->type.':'.$location->code;
+        }
+
+        $methods = [];
+
+        foreach ($zone->get_shipping_methods(false) as $method) {
+            if ($method->id === 'rulehook') {
+                continue;
+            }
+
+            $methods[] = [
+                'method_id' => $method->id,
+                'instance_id' => (string) $method->get_instance_id(),
+                'title' => wp_strip_all_tags((string) $method->get_title()),
+                'method_title' => wp_strip_all_tags((string) $method->get_method_title()),
+                'enabled' => $method->is_enabled(),
+            ];
+        }
+
+        return [
+            'id' => $zone->get_id(),
+            'name' => $zone->get_zone_name(),
+            'locations' => $locations,
+            'methods' => $methods,
+        ];
     }
 
     private function updateSyncData(array $result): void

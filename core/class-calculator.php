@@ -15,6 +15,14 @@ class Calculator
 {
     private static $in_process = [];
 
+    /**
+     * Set while the connector scans the store's own rates, so neither the
+     * RuleHook method nor the rates filter calls the API.
+     *
+     * @var bool
+     */
+    private static $suspended = false;
+
     private string $shipping_title = 'Shipping';
 
     public function __construct(string $shipping_title)
@@ -22,12 +30,28 @@ class Calculator
         $this->shipping_title = $shipping_title;
     }
 
+    public static function suspend(bool $suspended): void
+    {
+        self::$suspended = $suspended;
+    }
+
+    public static function is_suspended(): bool
+    {
+        return self::$suspended;
+    }
+
     /**
+     * Protocol 1: RuleHook's own rates, added by its shipping method.
+     *
      * @return array<Rate>
      */
     public function calculate(array $package): array
     {
-        $package_hash = $this->get_package_hash($package);
+        if (self::$suspended) {
+            return [];
+        }
+
+        $package_hash = self::get_package_hash($package);
 
         if (isset(self::$in_process[$package_hash])) {
             return self::$in_process[$package_hash]; // already computed this request
@@ -43,10 +67,12 @@ class Calculator
         $cart_data = $this->build_cart_payload($package);
 
         try {
-            $client = new Client(Constants::API_URL, $api_key);
+            $client = new Client(Constants::api_url(), $api_key);
             $evaluator = new Evaluator($client);
 
-            $rates = $evaluator->evaluateRates($cart_data);
+            $response = $evaluator->evaluate($cart_data);
+            External_Rates::remember_from_response($response);
+            $rates = $response['rates'];
 
             if (empty($rates)) {
                 return [];
@@ -59,27 +85,7 @@ class Calculator
                     $this->handleActions($rate['actions']);
                 }
 
-                $woocommerceRates[] = (new Rate)
-                    ->setId('rulehook:'.sanitize_title($rate['id']))
-                    ->setLabel(
-                        sprintf(
-                            '%s%s',
-                            sanitize_text_field($rate['label']),
-                            ! empty($rate['eta']) ? ' ('.$rate['eta'].')' : ''
-                        )
-                    )
-                    ->setCost(floatval($rate['cost']))
-                    ->setMetaData(
-                        [
-                            'actions' => array_map(function ($action) {
-                                return $action['type'];
-                            }, $rate['actions'] ?? []),
-                            'ETA' => $rate['eta'] ?? '',
-                            'Notes' => $rate['description'] ?? '',
-                            Subtitle_Action::META_KEY => $this->get_subtitle($rate['actions'] ?? []),
-                        ]
-                    );
-
+                $woocommerceRates[] = $this->build_rate($rate);
             }
 
             self::$in_process[$package_hash] = $woocommerceRates;
@@ -92,7 +98,34 @@ class Calculator
 
     }
 
-    private function build_cart_payload($package): array
+    /**
+     * A RuleHook rate from the API response, as WooCommerce rate args.
+     */
+    public function build_rate(array $rate): Rate
+    {
+        return (new Rate)
+            ->setId('rulehook:'.sanitize_title($rate['id']))
+            ->setLabel(
+                sprintf(
+                    '%s%s',
+                    sanitize_text_field($rate['label']),
+                    ! empty($rate['eta']) ? ' ('.$rate['eta'].')' : ''
+                )
+            )
+            ->setCost(floatval($rate['cost']))
+            ->setMetaData(
+                [
+                    'actions' => array_map(function ($action) {
+                        return $action['type'];
+                    }, $rate['actions'] ?? []),
+                    'ETA' => $rate['eta'] ?? '',
+                    'Notes' => $rate['description'] ?? '',
+                    Subtitle_Action::META_KEY => $this->get_subtitle($rate['actions'] ?? []),
+                ]
+            );
+    }
+
+    public function build_cart_payload($package): array
     {
         $items = [];
         foreach (WC()->cart->get_cart() as $cart_item) {
@@ -136,10 +169,18 @@ class Calculator
         ];
     }
 
-    private function handleActions(array $actions): void
+    /**
+     * Runs the connector-side actions. With protocol 2 the server already
+     * applied hide_other_methods to every rate, so it isn't repeated here.
+     */
+    public function handleActions(array $actions, bool $protocol_2 = false): void
     {
         foreach ($actions as $action) {
-            $ruleAction = Actions_Factory::make($action['type'], $action['payload']);
+            if ($protocol_2 && ($action['type'] ?? '') === 'hide_other_methods') {
+                continue;
+            }
+
+            $ruleAction = Actions_Factory::make($action['type'], $action['payload'] ?? []);
             if (! $ruleAction) {
                 continue; // Skip unknown actions
             }
@@ -149,7 +190,7 @@ class Calculator
 
     }
 
-    private function get_subtitle(array $actions): string
+    public function get_subtitle(array $actions): string
     {
         $subtitle = '';
         foreach ($actions as $action) {
@@ -161,7 +202,7 @@ class Calculator
         return $subtitle;
     }
 
-    protected function get_package_hash($package)
+    public static function get_package_hash($package)
     {
         $payload = [
             'dest' => $package['destination'],
