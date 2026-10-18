@@ -3,7 +3,7 @@ Contributors: waseem_senjer, wprubyplugins, rulehook
 Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
