@@ -215,6 +215,7 @@ const loadApp = () => {
       devMode.value = response.data.devMode
       shippingMethodEnabled.value = response.data.shippingMethodEnabled
       connectionUrl.value = response.data.connectionUrl
+      baseUrl.value = response.data.rulehookUrl || baseUrl.value
       countries.value = response.data.countries || {}
       externalRatesEnabled.value = response.data.externalRatesEnabled
       if (!restOfWorldCountry.value) {

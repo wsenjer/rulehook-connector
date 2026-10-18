@@ -63,4 +63,16 @@ class Constants
 
         return (string) apply_filters('rulehook_api_url', $url);
     }
+
+    /**
+     * The RuleHook app URL used for the connect and dashboard links. Define
+     * RULEHOOK_URL in wp-config.php, or use the rulehook_url filter, to point
+     * the links at another server.
+     */
+    public static function rulehook_url(): string
+    {
+        $url = defined('RULEHOOK_URL') ? (string) RULEHOOK_URL : self::RULE_HOOK_URL;
+
+        return (string) apply_filters('rulehook_url', $url);
+    }
 }
