@@ -72,6 +72,7 @@ class Calculator
 
             $response = $evaluator->evaluate($cart_data);
             External_Rates::remember_from_response($response);
+            Margin_Sync::remember_from_response($response);
             $rates = $response['rates'];
 
             if (empty($rates)) {

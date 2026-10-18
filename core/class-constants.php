@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Constants
 {
-    const UTIL_CURRENT_VERSION = '2.0.0';
+    const UTIL_CURRENT_VERSION = '2.1.0';
 
     const API_URL = 'https://rulehook.com/api';
 
@@ -33,6 +33,19 @@ class Constants
      * means unknown.
      */
     const EXTERNAL_RATES_ENABLED_KEY = 'rulehook_external_rates_enabled';
+
+    /**
+     * Transient caching the store's shipping margin opt-in
+     * (`margin_sync_enabled`), in the same shape as
+     * EXTERNAL_RATES_ENABLED_KEY.
+     */
+    const MARGIN_SYNC_ENABLED_KEY = 'rulehook_margin_sync_enabled';
+
+    /**
+     * Option holding the secret that order ids are hashed with before they
+     * are sent. It never leaves the store.
+     */
+    const ORDER_REF_SALT_KEY = 'rulehook_order_ref_salt';
 
     /**
      * Seconds to wait for /evaluate when RuleHook handles every rate. On a

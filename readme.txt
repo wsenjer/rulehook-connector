@@ -4,7 +4,7 @@ Donate link: https://rulehook.com
 Tags: woocommerce, shipping, dynamic shipping, rule-based shipping
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -54,6 +54,7 @@ The plugin may send the following data to the RuleHook API during operation:
 - Shipping zones, methods, and related settings
 - Destination country, state, postcode, and cart details (for rate calculation)
 - API credentials generated during the “Authorize This Site” process
+- Only if you turn on Shipping Margin in RuleHook: for each order, when it is placed and when it is completed, refunded or cancelled, an irreversible order reference (a hash of the order id with a secret that stays in your store), the shipping rate chosen and what was charged for it, order value and weight totals, product ids and quantities, the destination country, state and postcode prefix, and timestamps. Names, email addresses, street addresses and coupon codes are never sent.
 
 No customer personal data (such as names, email addresses, or phone numbers) is transmitted.
 
@@ -102,6 +103,12 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 
 == Changelog ==
 
+= 2.1.0 =
+* Added: order outcomes for RuleHook's Shipping Margin. Once you turn on Shipping Margin in RuleHook, the connector reports each order's chosen shipping rate, what was charged for it, and its value and weight totals when the order is placed, completed, refunded or cancelled. Until then nothing is sent.
+* Added: outcomes are sent in the background with Action Scheduler, so checkout never waits for RuleHook. A failed send is retried four times over about two and a half hours, then dropped.
+* Privacy: order ids are hashed with a secret that never leaves your store, and only the destination's country, state and postcode prefix are sent. Names, emails and addresses never are.
+* Fixed: a RuleHook API error no longer triggers an "Array to string conversion" PHP warning.
+
 = 2.0.0 =
 * Added: rules can hide, rename and reprice rates from your other shipping plugins (for example Australia Post live rates), once you turn on rules for store rates in RuleHook's store settings. Until then the connector works exactly as before.
 * Added: with store rates on, RuleHook is called once per shipping calculation, after every shipping plugin has added its rates. Repriced rates get their taxes recalculated.
@@ -130,6 +137,9 @@ You can recreate your existing methods as RuleHook rules, then extend them with 
 
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+Adds order reporting for RuleHook's Shipping Margin. Nothing is sent until you turn it on in RuleHook.
 
 = 2.0.0 =
 Lets RuleHook rules act on rates from your other shipping plugins. Nothing changes until you turn this on in RuleHook's store settings.
