@@ -7,6 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 use RuleHook\Core\Constants;
 use RuleHook\Core\External_Rates;
+use RuleHook\Core\Margin_Sync;
+use RuleHook\Core\Outcomes\Order_Backfill;
 
 class Load_App_Data_Endpoint extends Abstract_Endpoint
 {
@@ -35,6 +37,8 @@ class Load_App_Data_Endpoint extends Abstract_Endpoint
             'connectionUrl' => $this->getConnectionUrl(),
             'rulehookUrl' => Constants::rulehook_url(),
             'externalRatesEnabled' => External_Rates::stored_status() === 'yes',
+            'marginSyncEnabled' => Margin_Sync::is_enabled(),
+            'orderBackfill' => Order_Backfill::state(),
             'countries' => WC()->countries->get_countries(),
             'baseCountry' => WC()->countries->get_base_country(),
         ];

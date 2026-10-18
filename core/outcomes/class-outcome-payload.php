@@ -33,7 +33,10 @@ class Outcome_Payload
                 'status' => $status,
                 'occurred_at' => $occurred_at,
                 'order_created_at' => $created ? gmdate('Y-m-d\TH:i:s\Z', $created->getTimestamp()) : $occurred_at,
-                'source' => 'live',
+                // An order the connector saw placed is live; one from before
+                // the store opted in is backfill, which RuleHook never counts
+                // against the store's monthly order limit (§11.3).
+                'source' => $order->get_meta(Order_Outcomes::PLACED_META) ? 'live' : 'backfill',
                 'session_id' => $session_id !== '' ? $session_id : null,
                 'currency' => strtoupper((string) $order->get_currency()),
                 'shipping_lines' => $shipping_lines,
